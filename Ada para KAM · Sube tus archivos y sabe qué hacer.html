@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ada para KAM · Sube tus archivos y sabe qué hacer</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+body{margin:0;background:#f7f7f5}
+#ada-kam{--ink:#1f2328;--mute:#667085;--line:#e4e7ec;--card:#fff;--acc:#ff441f;--acc2:#7a2e1f;--ok:#12805c;--warn:#b54708;
+  color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;max-width:1080px;margin:0 auto;padding:28px 20px 60px}
+#ada-kam *{box-sizing:border-box}
+#ada-kam h1{font-size:27px;margin:0 0 4px;letter-spacing:-.01em}
+#ada-kam h2{font-size:17px;margin:0 0 4px}
+#ada-kam h3{font-size:14px;margin:0 0 4px}
+#ada-kam .sub{color:var(--mute);margin:0 0 18px;font-size:16px}
+#ada-kam .badge{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:#fff1ed;color:var(--acc2);border:1px solid #ffd3c8;vertical-align:middle;margin-left:8px}
+#ada-kam .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px}
+#ada-kam .step{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+#ada-kam .num{width:26px;height:26px;border-radius:50%;background:var(--acc);color:#fff;font-weight:700;display:grid;place-items:center;font-size:13px;flex:none}
+#ada-kam .note{color:var(--mute);font-size:13px}
+#ada-kam .drop{border:2px dashed #c9ced6;border-radius:14px;padding:26px 16px;background:#fafafa;text-align:center}
+#ada-kam .drop.on{border-color:var(--acc);background:#fff6f3}
+#ada-kam .drop b{font-size:16px;display:block}
+#ada-kam .drop input{margin-top:10px;max-width:100%}
+#ada-kam .files{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media(max-width:760px){#ada-kam .files{grid-template-columns:1fr}}
+#ada-kam .slot{border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px}
+#ada-kam .slot.ok{border-color:#b7e4d0;background:#f3fbf7}
+#ada-kam .slot b{display:block}
+#ada-kam button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:#fff;padding:8px 14px}
+#ada-kam button.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+#ada-kam button:disabled{opacity:.5;cursor:default}
+#ada-kam details{margin-top:8px;font-size:13px}
+#ada-kam summary{cursor:pointer;color:var(--mute)}
+#ada-kam .map{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center;margin-top:6px}
+#ada-kam select{font:inherit;font-size:13.5px;padding:4px 6px;max-width:100%;border-radius:8px;border:1px solid var(--line);background:#fff}
+#ada-kam .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:12px 0}
+@media(max-width:760px){#ada-kam .kpis{grid-template-columns:repeat(2,1fr)}}
+#ada-kam .kpi{background:#fafafa;border:1px solid var(--line);border-radius:12px;padding:12px}
+#ada-kam .kpi b{display:block;font-size:23px;letter-spacing:-.01em}
+#ada-kam .kpi span{color:var(--mute);font-size:12.5px}
+#ada-kam .up{color:var(--ok)}#ada-kam .down{color:#b42318}
+#ada-kam table{width:100%;border-collapse:collapse;font-size:13.5px}
+#ada-kam th{text-align:left;color:var(--mute);font-weight:600;border-bottom:1px solid var(--line);padding:6px 8px}
+#ada-kam td{border-bottom:1px solid #f0f1f3;padding:8px}
+#ada-kam tr.pick{cursor:pointer}#ada-kam tr.pick:hover td{background:#fff6f3}#ada-kam tr.sel td{background:#fff1ed}
+#ada-kam .tag{font-size:12px;padding:1px 9px;border-radius:99px;font-weight:600;white-space:nowrap}
+#ada-kam .Alta{background:#e6f6ef;color:var(--ok)}#ada-kam .Media{background:#fff4e5;color:var(--warn)}#ada-kam .Baja{background:#fdecea;color:#b42318}
+#ada-kam .p1{background:#fdecea;color:#b42318}#ada-kam .p2{background:#fff4e5;color:var(--warn)}#ada-kam .p3{background:#eef2f6;color:#475467}
+#ada-kam .act{border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:12px;padding:14px 16px;margin-bottom:12px;background:#fff}
+#ada-kam .act.k-servicio{border-left-color:#7a2e1f;background:#fffaf8}
+#ada-kam .act.ap3{border-left-color:#c9ced6}
+#ada-kam .act h3{font-size:15.5px;margin:6px 0 4px}
+#ada-kam .act p{margin:2px 0;font-size:14px}
+#ada-kam .act ul{margin:6px 0 2px;padding-left:18px;font-size:13.5px;color:#344054}
+#ada-kam .lbl{font-weight:600;color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+#ada-kam .head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+#ada-kam .chartbox{position:relative;height:250px}
+#ada-kam .charts{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+@media(max-width:760px){#ada-kam .charts{grid-template-columns:1fr}}
+#ada-kam .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){#ada-kam .grid2{grid-template-columns:1fr}}
+#ada-kam .warn{background:#fffaeb;border:1px solid #fedf89;color:#7a4b00;border-radius:10px;padding:8px 12px;font-size:13px;margin:8px 0}
+#ada-kam .err{background:#fef3f2;border:1px solid #fecdca;color:#b42318;border-radius:10px;padding:10px 12px;font-size:13.5px;margin:8px 0}
+#ada-kam .ada{background:#fff6f3;border:1px solid #ffd3c8;border-radius:12px;padding:12px 14px;margin-top:10px;white-space:pre-wrap}
+#ada-kam .hide{display:none}
+</style>
+</head>
+<body>
+<div id="ada-kam">
+  <h1>Ada para KAM <span class="badge">Prototipo</span></h1>
+  <p class="sub">Sube los archivos de promociones y ventas. Ada los analiza y te dice qué hacer con cada cliente.</p>
+
+  <div class="card">
+    <div class="step"><div class="num">1</div><h2>Sube tus archivos</h2></div>
+    <div class="drop" id="ak-drop"><b>Arrastra aquí tus Excel o CSV</b><span class="note">Puedes soltar los dos a la vez: Ada reconoce cuál es el de promociones y cuál el de ventas.</span><br><input type="file" id="ak-files" accept=".xlsx,.xls,.csv" multiple></div>
+    <div class="files">
+      <div class="slot" id="ak-slotPromo"><b>Promociones</b><span class="note" id="ak-sPromo">Falta subir</span><div id="ak-mPromo"></div></div>
+      <div class="slot" id="ak-slotVentas"><b>Ventas</b><span class="note" id="ak-sVentas">Falta subir</span><div id="ak-mVentas"></div></div>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button id="ak-run" class="pri" disabled>Analizar</button>
+      <button id="ak-sample">Probar con datos de ejemplo</button>
+      <span class="note">Los archivos se leen en tu navegador y no se guardan en ningún servidor.</span>
+    </div>
+    <div id="ak-errs"></div>
+  </div>
+
+  <div id="ak-out" class="hide">
+    <div class="card" id="ak-cartera"></div>
+    <div id="ak-brand"></div>
+    <div class="card">
+      <details id="ak-how"><summary><b>Cómo aprendió Ada</b> · patrones generales de todos tus datos</summary>
+        <div class="charts" style="margin-top:12px">
+          <div><h3>Alza de ventas según el % de descuento</h3><p class="note" style="margin:0 0 6px">Promedio frente a lo esperable ese mes sin promoción.</p><div class="chartbox"><canvas id="ak-cBand"></canvas></div></div>
+          <div><h3>Demanda normal por mes del año</h3><p class="note" style="margin:0 0 6px">1,00 = mes promedio, sin promociones.</p><div class="chartbox"><canvas id="ak-cSeas"></canvas></div></div>
+        </div>
+        <div id="ak-extra" style="margin-top:14px"></div>
+      </details>
+    </div>
+    <p class="note">Las sugerencias son estadísticas de lo ocurrido; no garantizan resultados futuros. Próxima fase: conexión directa a Power BI para no subir archivos a mano.</p>
+  </div>
+</div>
+<script>
+/* ===== Núcleo de Ada: lectura de columnas, análisis y recomendaciones (sin DOM) ===== */
+const FIELDS = {
+  promo: [
+    { k: 'codigo', label: 'Código del producto Rappi', req: true, alias: ['codigo producto rappi', 'codigo del producto para rappi', 'codigo rappi', 'cod rappi', 'sku rappi', 'item', 'sku', 'codigo producto', 'codigo'] },
+    { k: 'desc', label: 'Descripción', alias: ['descripcion de catalogo', 'descripcion catalogo', 'descripcion', 'producto', 'nombre'] },
+    { k: 'mes', label: 'Mes de activación', req: true, alias: ['mes de activacion', 'mes activacion', 'activacion', 'mes', 'periodo'] },
+    { k: 'pct', label: '% de descuento', req: true, alias: ['% de descuento', '% descuento', 'pct descuento', 'descuento'] },
+    { k: 'pctMarca', label: '% descuento que paga la marca', alias: ['% de descuento que nosotros vamos a pagar', 'que nosotros vamos a pagar', 'vamos a pagar', 'paga la marca', 'nosotros'] },
+    { k: 'pctRappi', label: '% descuento que paga Rappi', alias: ['% de descuento que ellos como empresa pagan', 'ellos como empresa pagan', 'empresa pagan', 'paga rappi', 'ellos'] },
+    { k: 'tipoAd', label: 'Tipo de anuncio (opcional)', alias: ['tipo de anuncio', 'tipo anuncio', 'tipo ad', 'formato de anuncio', 'anuncio'] },
+    { k: 'duracion', label: 'Duración en días (opcional)', alias: ['duracion dias', 'duracion en dias', 'duracion', 'dias'] },
+    { k: 'marca', label: 'Marca o cliente (opcional)', exactOnly: true, alias: ['marca', 'cliente', 'proveedor', 'empresa', 'brand'] }
+  ],
+  ventas: [
+    { k: 'codigo', label: 'Código del producto (item)', req: true, alias: ['item', 'codigo producto rappi', 'codigo rappi', 'sku rappi', 'codigo producto', 'codigo'] },
+    { k: 'periodo', label: 'Periodo', req: true, alias: ['periodo', 'mes', 'fecha'] },
+    { k: 'cant', label: 'Cantidad de unidades', req: true, alias: ['cantidad de unidades', 'cantidades', 'cantidad', 'unidades', 'unid'] },
+    { k: 'kilos', label: 'Kilos vendidos (opcional)', alias: ['kilos vendidos', 'kilos', 'kg'] },
+    { k: 'nns', label: 'NNS (opcional, ventas netas)', alias: ['nns', 'venta neta', 'ventas netas'] },
+    { k: 'marca', label: 'Marca o cliente (opcional)', exactOnly: true, alias: ['marca', 'cliente', 'proveedor', 'empresa', 'brand'] }
+  ]
+};
+
+const norm = (s) => String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9%]+/g, ' ').trim();
+
+function detectMapping(kind, headers) {
+  const fields = FIELDS[kind], nh = headers.map(norm), used = new Set(), map = {};
+  // pasada 1: coincidencia exacta; pasada 2: el encabezado contiene el alias
+  for (const pass of [1, 2]) {
+    for (const f of fields) {
+      if (map[f.k] != null || (pass === 2 && f.exactOnly)) continue;
+      for (const a of f.alias) {
+        const an = norm(a);
+        const i = nh.findIndex((h, idx) => !used.has(idx) && h && (pass === 1 ? h === an : an.length >= 4 && h.includes(an)));
+        if (i >= 0) { map[f.k] = headers[i]; used.add(i); break; }
+      }
+    }
+  }
+  return map;
+}
+
+const MESES = { enero: 1, ene: 1, febrero: 2, feb: 2, marzo: 3, mar: 3, abril: 4, abr: 4, mayo: 5, may: 5, junio: 6, jun: 6, julio: 7, jul: 7, agosto: 8, ago: 8, septiembre: 9, setiembre: 9, sep: 9, sept: 9, octubre: 10, oct: 10, noviembre: 11, nov: 11, diciembre: 12, dic: 12 };
+const ym = (y, m) => (m >= 1 && m <= 12 && y >= 1990 && y <= 2100) ? y + '-' + String(m).padStart(2, '0') : null;
+
+function toPeriod(v) {
+  if (v == null || v === '') return null;
+  if (v instanceof Date) return ym(v.getUTCFullYear(), v.getUTCMonth() + 1);
+  if (typeof v === 'number') {
+    if (v > 20000 && v < 80000) { const d = new Date(Math.round((v - 25569) * 86400000)); return ym(d.getUTCFullYear(), d.getUTCMonth() + 1); }
+    if (v >= 199001 && v <= 209912) return ym(Math.floor(v / 100), v % 100);
+    return null;
+  }
+  const s = norm(v).replace(/ /g, '-'); let m;
+  const raw = String(v).trim().toLowerCase();
+  if ((m = raw.match(/^(\d{4})[-\/.](\d{1,2})/))) return ym(+m[1], +m[2]);
+  if ((m = raw.match(/^(\d{1,2})[-\/.](\d{4})$/))) return ym(+m[2], +m[1]);
+  if ((m = raw.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/))) return ym(+m[3], +m[2]); // dd/mm/aaaa
+  if ((m = raw.match(/^(\d{4})(\d{2})$/))) return ym(+m[1], +m[2]);
+  if ((m = s.match(/^([a-z]+)-?(\d{2,4})$/)) && MESES[m[1]]) { const y = +m[2] < 100 ? 2000 + +m[2] : +m[2]; return ym(y, MESES[m[1]]); }
+  return null;
+}
+
+function parseNum(v) {
+  if (v == null || v === '') return null;
+  if (typeof v === 'number') return isFinite(v) ? v : null;
+  let s = String(v).replace(/[%\s$]/g, '');
+  if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+  else if (s.includes(',')) s = s.replace(',', '.');
+  const n = parseFloat(s); return isFinite(n) ? n : null;
+}
+function toPct(v) {
+  const n = parseNum(v); if (n == null) return null;
+  const hasSign = typeof v === 'string' && v.includes('%');
+  const p = (!hasSign && n <= 1) ? n * 100 : n;
+  return (p >= 0 && p <= 100) ? p : null;
+}
+
+const band = (p) => p <= 10 ? 'Hasta 10%' : p <= 20 ? '11–20%' : p <= 30 ? '21–30%' : 'Más de 30%';
+const BANDS = ['Hasta 10%', '11–20%', '21–30%', 'Más de 30%'];
+const durBand = (d) => d <= 7 ? 'Hasta 7 días' : d <= 14 ? '8–14 días' : 'Más de 14 días';
+const DURS = ['Hasta 7 días', '8–14 días', 'Más de 14 días'];
+const mean = (a) => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+const K_SHRINK = 3;
+
+function analyze(promoRows, ventasRows, mp, mv) {
+  const warn = [];
+  // --- promociones
+  let badPromo = 0;
+  const promoMap = new Map();
+  for (const r of promoRows) {
+    const cod = String(r[mp.codigo] ?? '').trim(), per = toPeriod(r[mp.mes]), pct = toPct(r[mp.pct]);
+    if (!cod || !per || pct == null) { badPromo++; continue; }
+    if (pct <= 0) continue; // sin descuento: no es promoción
+    const key = cod + '|' + per, prev = promoMap.get(key);
+    if (!prev || pct > prev.pct) promoMap.set(key, {
+      cod, per, pct, desc: mp.desc ? String(r[mp.desc] ?? '') : '',
+      tipo: mp.tipoAd && r[mp.tipoAd] ? String(r[mp.tipoAd]).trim() : null,
+      dur: mp.duracion ? parseNum(r[mp.duracion]) : null,
+      pm: mp.pctMarca ? toPct(r[mp.pctMarca]) : null
+    });
+  }
+  if (badPromo) warn.push(`${badPromo} filas de promociones se ignoraron (código, mes o % de descuento ilegible).`);
+  // --- ventas
+  let badVent = 0;
+  const sales = new Map();
+  for (const r of ventasRows) {
+    const cod = String(r[mv.codigo] ?? '').trim(), per = toPeriod(r[mv.periodo]), u = parseNum(r[mv.cant]);
+    if (!cod || !per || u == null) { badVent++; continue; }
+    const key = cod + '|' + per;
+    const s = sales.get(key) || { cod, per, u: 0, n: 0, hasN: false, k: 0 };
+    s.u += u; if (mv.kilos) s.k += parseNum(r[mv.kilos]) || 0;
+    if (mv.nns) { const n = parseNum(r[mv.nns]); if (n != null) { s.n += n; s.hasN = true; } }
+    sales.set(key, s);
+  }
+  if (badVent) warn.push(`${badVent} filas de ventas se ignoraron (código, periodo o cantidad ilegible).`);
+  const useNNS = !!mv.nns && [...sales.values()].some(s => s.hasN);
+  const metric = (s) => useNNS ? s.n : s.u;
+  if (mv.nns && !useNNS) warn.push('La columna NNS no tiene valores numéricos: el análisis usa unidades.');
+  if (!mv.nns) warn.push('Sin columna NNS: las recomendaciones se calculan sobre unidades vendidas, no sobre ventas netas.');
+
+  // --- línea base por producto (meses sin promoción)
+  const byProd = new Map();
+  for (const s of sales.values()) { if (!byProd.has(s.cod)) byProd.set(s.cod, []); byProd.get(s.cod).push(s); }
+  const base = new Map();
+  for (const [cod, arr] of byProd) {
+    const nb = arr.filter(s => !promoMap.has(s.cod + '|' + s.per) && s.u > 0);
+    if (nb.length >= 2) base.set(cod, { u: mean(nb.map(s => s.u)), m: mean(nb.map(metric)), n: nb.length });
+  }
+  // --- estacionalidad mensual (con encogimiento hacia 1)
+  const acc = {};
+  for (const [cod, arr] of byProd) {
+    const b = base.get(cod); if (!b || !b.u) continue;
+    for (const s of arr) if (!promoMap.has(s.cod + '|' + s.per) && s.u > 0) {
+      const mth = +s.per.slice(5); (acc[mth] = acc[mth] || []).push(s.u / b.u);
+    }
+  }
+  const seas = {}; let tot = 0, cnt = 0;
+  for (let m = 1; m <= 12; m++) { const a = acc[m] || []; seas[m] = (a.reduce((x, y) => x + y, 0) + 2) / (a.length + 2); tot += seas[m]; cnt++; }
+  for (let m = 1; m <= 12; m++) seas[m] = seas[m] / (tot / cnt);
+
+  // --- observaciones de promoción (alza vs. lo esperable ese mes sin promo)
+  const obs = [];
+  for (const p of promoMap.values()) {
+    const s = sales.get(p.cod + '|' + p.per), b = base.get(p.cod);
+    if (!s || !b || !b.u || !b.m) continue;
+    const mth = +p.per.slice(5), sf = seas[mth] || 1;
+    const upU = s.u / (b.u * sf) - 1;
+    const up = useNNS ? (s.hasN ? s.n / (b.m * sf) - 1 : null) : upU;
+    if (up == null) continue;
+    obs.push({ cod: p.cod, desc: p.desc, per: p.per, pct: p.pct, band: band(p.pct), tipo: p.tipo, dur: p.dur, durBand: p.dur != null ? durBand(p.dur) : null, upU, up, pm: p.pm });
+  }
+  if (!obs.length) throw new Error('No se pudo cruzar ninguna promoción con ventas. Revisa que los códigos y los meses coincidan entre ambos archivos, y que cada producto tenga al menos 2 meses sin promoción.');
+
+  const groupStats = (arr, keyFn, order) => {
+    const g = {}; for (const o of arr) { const k = keyFn(o); if (k == null) continue; (g[k] = g[k] || []).push(o); }
+    const keys = order ? order.filter(k => g[k]) : Object.keys(g);
+    return keys.map(k => ({ key: k, n: g[k].length, up: mean(g[k].map(o => o.up)), upU: mean(g[k].map(o => o.upU)) }));
+  };
+  const global = {
+    band: groupStats(obs, o => o.band, BANDS),
+    tipo: groupStats(obs, o => o.tipo),
+    dur: groupStats(obs, o => o.durBand, DURS)
+  };
+  const gmean = (list, key) => (list.find(x => x.key === key) || {}).up;
+
+  // mejor grupo para un producto, con encogimiento hacia el promedio global
+  function best(prodObs, keyFn, globalList) {
+    const cand = globalList.filter(g => g.n >= 2);
+    if (!cand.length) return null;
+    const rows = cand.map(g => {
+      const mine = prodObs.filter(o => keyFn(o) === g.key);
+      const score = (mine.reduce((s, o) => s + o.up, 0) + K_SHRINK * g.up) / (mine.length + K_SHRINK);
+      return { key: g.key, nMine: mine.length, score, own: mine.length ? mean(mine.map(o => o.up)) : null, glob: g.up };
+    }).sort((a, b) => b.score - a.score);
+    return { top: rows[0], rows };
+  }
+
+  const products = [];
+  for (const cod of base.keys()) {
+    const po = obs.filter(o => o.cod === cod);
+    const bb = best(po, o => o.band, global.band);
+    if (!bb) continue;
+    const bt = global.tipo.length ? best(po, o => o.tipo, global.tipo) : null;
+    const bd = global.dur.length ? best(po, o => o.durBand, global.dur) : null;
+    const desc = (po.find(o => o.desc) || {}).desc || (promoRows.find(r => String(r[mp.codigo] ?? '').trim() === cod && mp.desc) || {})[mp.desc] || '';
+    const conf = po.length >= 4 ? 'Alta' : po.length >= 2 ? 'Media' : 'Baja';
+    products.push({ cod, desc: desc || cod, nPromos: po.length, conf, band: bb, tipo: bt, dur: bd, obs: po, baseU: base.get(cod).u });
+  }
+  products.sort((a, b) => b.band.top.score - a.band.top.score);
+
+  // --- marcas, tendencias y tipo de cliente
+  const prodBrand = new Map();
+  const fillBrand = (rows, m) => { if (!m.marca) return; for (const r of rows) { const c = String(r[m.codigo] ?? '').trim(), b = String(r[m.marca] ?? '').trim(); if (c && b && !prodBrand.has(c)) prodBrand.set(c, b); } };
+  fillBrand(ventasRows, mv); fillBrand(promoRows, mp);
+  const brandOf = (c) => prodBrand.get(c) || 'Todas las marcas';
+  const periods = [...new Set([...sales.values()].map(s => s.per))].sort();
+  const lastPer = periods[periods.length - 1];
+  const last3 = periods.slice(-3), prev3 = periods.slice(-6, -3);
+  const adj = (s) => metric(s) / (seas[+s.per.slice(5)] || 1);
+  const normalMean = (cod, pers) => { const a = (byProd.get(cod) || []).filter(s => pers.includes(s.per) && !promoMap.has(s.cod + '|' + s.per)).map(adj); return a.length ? mean(a) : null; };
+  const trendOf = (cod) => { if (prev3.length < 3) return null; const l = normalMean(cod, last3), p = normalMean(cod, prev3); return (l != null && p) ? { t: l / p - 1, l, p } : null; };
+  for (const p of products) {
+    const tr = trendOf(p.cod); p.trend = tr ? tr.t : null; p.brand = brandOf(p.cod);
+    p.promoRecent = last3.some(per => promoMap.has(p.cod + '|' + per));
+    const mine = [...promoMap.values()].filter(x => x.cod === p.cod).map(x => x.per).sort(); p.lastPromo = mine.length ? mine[mine.length - 1] : null;
+  }
+  const brandNames = [...new Set([...byProd.keys()].map(brandOf))];
+  const brands = brandNames.map(name => {
+    const codes = [...byProd.keys()].filter(c => brandOf(c) === name);
+    const series = periods.map(per => { let v = 0, pc = 0; for (const c of codes) { const s = sales.get(c + '|' + per); if (s) { v += metric(s); if (promoMap.has(c + '|' + per)) pc++; } } return { per, v, promos: pc }; });
+    let tot = 0, inPromo = 0;
+    for (const c of codes) for (const s of byProd.get(c)) { tot += metric(s); if (promoMap.has(s.cod + '|' + s.per)) inPromo += metric(s); }
+    let L = 0, Pv = 0, nT = 0;
+    for (const c of codes) { const tr = trendOf(c); if (tr) { L += tr.l; Pv += tr.p; nT++; } }
+    const ob = obs.filter(o => brandOf(o.cod) === name);
+    return { name, codes, series, total: tot, promoShare: tot ? inPromo / tot : 0, trend: (nT && Pv) ? L / Pv - 1 : null, avgUp: ob.length ? mean(ob.map(o => o.up)) : null, obs: ob, nProducts: codes.length, tier: null };
+  }).sort((a, b) => b.total - a.total);
+  if (brands.length >= 3) brands.forEach((b, i) => { b.tier = i < Math.ceil(brands.length * 0.2) ? 1 : i < Math.ceil(brands.length * 0.5) ? 2 : 3; });
+  const nm = (lastPer ? (+lastPer.slice(5) % 12) + 1 : 1);
+  const planning = { month: nm, idx: seas[nm] || 1 };
+  if (!prev3.length || prev3.length < 3) warn.push('Hay menos de 6 meses de ventas: Ada no puede calcular tendencias de los últimos 3 meses.');
+
+  return {
+    warn, useNNS, obs, global, seas, products, brands, planning, lastPer, periods,
+    nProductos: base.size, nPromos: obs.length,
+    medianUp: (() => { const a = obs.map(o => o.up).sort((x, y) => x - y); return a[Math.floor(a.length / 2)]; })(),
+    gmean
+  };
+}
+
+/* ===== Acciones sugeridas al KAM para una marca ===== */
+const MESN = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const pf = (x) => x == null ? '–' : (x >= 0 ? '+' : '') + Math.round(x * 100) + '%';
+const perL = (p) => MESN[+p.slice(5) - 1] + ' ' + p.slice(0, 4);
+
+function actionsFor(res, brand, tier) {
+  const A = [], prods = res.products.filter(p => p.brand === brand.name), uN = res.useNNS ? 'ventas netas' : 'unidades';
+  const sugg = (p) => p.band.top.key + (p.tipo ? ' · ' + p.tipo.top.key : '') + (p.dur ? ' · ' + p.dur.top.key : '');
+  // 1. productos en caída sin promoción reciente
+  const fall = prods.filter(p => p.trend != null && p.trend <= -0.10 && !p.promoRecent).sort((a, b) => a.trend - b.trend);
+  if (fall.length) A.push({ kind: 'caida', prio: fall.length >= 3 ? 1 : 2, title: `Reactivar ${fall.length} producto${fall.length > 1 ? 's' : ''} en caída`,
+    why: 'Sus ventas normales (sin promoción) bajaron en los últimos 3 meses y no tienen promoción reciente.',
+    how: 'Programa una promoción con la sugerencia de cada producto. Recuerda reservar el espacio con 15 días de anticipación.',
+    items: fall.slice(0, 6).map(p => `${p.desc}: ${pf(p.trend)} · sugerencia ${sugg(p)} (alza esperada ${pf(p.band.top.score)}, confianza ${p.conf.toLowerCase()})`) });
+  // 2. descuentos que no se pagaron solos
+  const bad = [...brand.obs].filter(o => o.up < 0).sort((a, b) => a.up - b.up);
+  if (bad.length) A.push({ kind: 'bajo', prio: bad.length >= 2 ? 1 : 2, title: bad.length > 1 ? 'Descuentos que no se pagaron solos' : 'Un descuento que no se pagó solo',
+    why: res.useNNS ? 'En estos casos el descuento no compensó: las ventas netas quedaron bajo lo esperable sin promoción.' : 'En estos casos la promoción no logró subir las ventas.',
+    how: 'La próxima vez usa un tramo menor o combínalo con un anuncio sin descuento.',
+    items: bad.slice(0, 5).map(o => { const p = prods.find(x => x.cod === o.cod); return `${(p && p.desc) || o.cod}: ${Math.round(o.pct)}% en ${perL(o.per)} → unidades ${pf(o.upU)}, ${uN} ${pf(o.up)} vs. lo esperado`; }) });
+  // 3. temporada
+  const idx = res.planning.idx, mes = MESN[res.planning.month - 1];
+  if (idx >= 1.05) A.push({ kind: 'temporada', prio: 1, title: `Se viene ${mes}: demanda más alta de lo normal`, why: `Históricamente ${mes} vende ${pf(idx - 1)} sobre un mes promedio.`,
+    how: 'Reserva espacio publicitario ahora (15 días de anticipación y aprobación del Country Manager) y prioriza los productos de mayor volumen.', items: [] });
+  else if (idx <= 0.95) A.push({ kind: 'temporada', prio: 3, title: `${mes[0].toUpperCase() + mes.slice(1)} suele ser un mes más flojo`, why: `Históricamente ${mes} vende ${pf(idx - 1)} bajo un mes promedio.`,
+    how: 'Buen momento para promociones que activen la demanda de los productos en caída.', items: [] });
+  // 4. dependencia de promociones
+  if (brand.promoShare >= 0.5) A.push({ kind: 'dep', prio: 2, title: 'La marca depende mucho de las promociones', why: `${Math.round(brand.promoShare * 100)}% de sus ventas ocurre en meses con promoción.`,
+    how: 'Alterna promociones con anuncios sin descuento (banner o video) para sostener la demanda sin regalar margen.', items: [] });
+  // 5. productos que ya crecen
+  const up = prods.filter(p => p.trend != null && p.trend >= 0.10 && !p.promoRecent).sort((a, b) => b.baseU - a.baseU).slice(0, 3);
+  if (up.length) A.push({ kind: 'crece', prio: 3, title: 'Cuida el margen en productos que ya crecen', why: 'Suben sin necesitar promoción reciente.',
+    how: 'No los descuentes. Si quieres empujarlos, usa un anuncio sin descuento.', items: up.map(p => `${p.desc}: ${pf(p.trend)} en ventas normales`) });
+  // 6. servicio publicitario según tipo de cliente
+  const bt = res.global.tipo.filter(g => g.n >= 3).sort((a, b) => b.up - a.up)[0];
+  const dataLine = bt ? `En los datos, el anuncio con mayor alza promedio fue “${bt.key}” (${pf(bt.up)}).` : null;
+  let sv;
+  if (tier === 3) sv = { t: 'Autoservicio guiado por Ada', d: 'Banner simple más una promoción en el tramo sugerido. Evita formatos con requisitos exigentes.' };
+  else if (tier === 2) sv = { t: 'Banner + video corto', d: 'Video de hasta 15 s y 10 MB, y revisión mensual de resultados con el cliente.' };
+  else if (tier === 1) { const n = brand.nProducts; sv = { t: n >= 20 ? 'Dynamic Landing + dashboard' : 'Video + dashboard (Dynamic Landing aún no aplica)', d: `Dynamic Landing exige mínimo 20 productos con 20% de descuento: la marca tiene ${n} productos en tus archivos. Ofrece dashboard y estudios, que tienen 2 a 5 semanas de espera: pídelos con tiempo.` }; }
+  else sv = { t: 'Define el tipo de cliente', d: 'Con menos de 3 marcas en tus archivos Ada no puede clasificarlas. Elige el tipo arriba para recibir el servicio sugerido.' };
+  A.push({ kind: 'servicio', prio: 2, title: 'Servicio publicitario sugerido: ' + sv.t, why: tier ? `Cliente ${tier === 1 ? 'tier 1' : tier === 2 ? 'tier 2' : 'longtail'}.` : '', how: sv.d + (dataLine ? ' ' + dataLine : ''), items: [] });
+  // 7. datos insuficientes
+  const noHist = brand.nProducts - prods.length;
+  if (noHist > 0) A.push({ kind: 'datos', prio: 3, title: `${noHist} producto${noHist > 1 ? 's' : ''} sin historial suficiente`, why: 'Necesitan al menos 2 meses sin promoción para poder comparar.', how: 'Ada no recomienda sobre ellos hasta tener más datos.', items: [] });
+  return A.sort((a, b) => a.prio - b.prio);
+}
+
+/* ===== Datos de ejemplo FICTICIOS con la misma estructura que los Excel descritos ===== */
+function mulberry(seed) { let s = seed >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+function makeSample() {
+  const r = mulberry(20261111);
+  const gauss = () => { let u = 0, v = 0; while (!u) u = r(); while (!v) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  const periods = []; for (let i = 0; i < 12; i++) { const y = 2025 + Math.floor((10 + i) / 12), m = ((10 + i) % 12) + 1; periods.push({ y, m, p: ym(y, m) }); }
+  const seasT = { 1: .92, 2: .88, 3: 1, 4: 1, 5: 1, 6: .97, 7: 1.05, 8: 1, 9: 1.02, 10: 1.05, 11: 1.1, 12: 1.22 };
+  const mn = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const kinds = [
+    ['Alimento perro adulto', 'kg', [3, 8, 15]], ['Alimento perro cachorro', 'kg', [3, 8]], ['Alimento gato adulto', 'kg', [1.5, 3, 7.5]],
+    ['Snack dental perro', 'g', [180, 350]], ['Alimento húmedo gato', 'g', [85, 340]], ['Arena sanitaria', 'kg', [4, 10]], ['Alimento perro raza pequeña', 'kg', [1, 3]]
+  ];
+  const brandDef = [['Marca Andes', 1.0, 7], ['Marca Pampa', 0.6, 5], ['Marca Sur', 0.3, 4], ['Marca Nube', 0.15, 3], ['Marca Alba', 0.08, 3]];
+  const flat = []; kinds.forEach(([name, unit, sizes]) => sizes.forEach(sz => flat.push([name, unit, sz])));
+  const prods = []; let fi = 0;
+  brandDef.forEach(([bn, scale, n]) => { for (let j = 0; j < n; j++, fi++) {
+    const [name, unit, sz] = flat[fi % flat.length], i = prods.length;
+    prods.push({
+      marca: bn, cod: 'RP-' + (10000 + i * 7), codMarca: 'MD-' + (4000 + i * 3), ean: '78' + String(Math.floor(r() * 1e11)).padStart(11, '0'), dun: '178' + String(Math.floor(r() * 1e11)).padStart(11, '0'),
+      desc: `${name} ${sz} ${unit}`, unit, sz, price: Math.round((5000 + sz * (unit === 'g' ? 30 : 4200) * (0.7 + r() * 0.6)) / 10) * 10,
+      base: Math.max(20, Math.round((120 + r() * 1100) * scale)), e: 0.6 + r() * 0.9, drift: -0.07 + r() * 0.11
+    });
+  } });
+  const tipos = ['Banner', 'Dynamic Landing', 'Video', 'Sin anuncio'], tipoB = { 'Banner': .05, 'Dynamic Landing': .15, 'Video': .10, 'Sin anuncio': 0 };
+  const durs = [7, 14, 30], durB = { 7: 0, 14: .06, 30: -.02 }, discs = [10, 15, 20, 25, 30, 40];
+  const promo = [], ventas = [];
+  for (const pr of prods) {
+    const nP = 3 + Math.floor(r() * 3), pm = new Set();
+    const noRecent = r() < 0.6; while (pm.size < nP) pm.add(Math.floor(r() * (noRecent ? 9 : 12)));
+    periods.forEach((pe, idx) => {
+      const sf = seasT[pe.m] * Math.pow(1 + pr.drift, idx), noise = Math.exp(0.07 * gauss());
+      let units, disc = 0;
+      if (pm.has(idx)) {
+        disc = discs[Math.floor(r() * discs.length)];
+        const tipo = tipos[Math.floor(r() * tipos.length)], dur = durs[Math.floor(r() * durs.length)];
+        const up = pr.e * 0.9 * (1 - Math.exp(-disc / 18)) + tipoB[tipo] + durB[dur];
+        units = Math.round(pr.base * sf * (1 + up) * noise);
+        const share = 0.5 + r() * 0.2;
+        promo.push({
+          'Marca': pr.marca, 'Código producto Rappi': pr.cod, 'Código producto marca': pr.codMarca, 'EAN': pr.ean, 'DUN': pr.dun, 'Descripción de catálogo': pr.desc,
+          'Formato (g/kg)': pr.unit, 'Costo del producto': Math.round(pr.price * 0.6), 'Precio de venta': pr.price, 'Precio fleje': pr.price,
+          'Precio fleje promoción': Math.round(pr.price * (1 - disc / 100)), '% de descuento': disc / 100, 'Mes de activación': mn[pe.m - 1] + ' ' + pe.y,
+          '% de descuento que nosotros vamos a pagar': Math.round(disc * share) / 100, '% de descuento que ellos como empresa pagan': Math.round(disc * (1 - share)) / 100,
+          'Tipo de anuncio': tipo, 'Duración (días)': dur
+        });
+      } else units = Math.round(pr.base * sf * noise);
+      ventas.push({
+        'Marca': pr.marca, 'Periodo': pe.p, 'Item': pr.cod, 'Código producto marca': pr.codMarca, 'Formato de venta': pr.sz + ' ' + pr.unit,
+        'Cantidad': units, 'Kilos vendidos': pr.unit === 'kg' ? Math.round(units * pr.sz) : Math.round(units * pr.sz / 1000),
+        'NNS': Math.round(units * pr.price * (1 - disc / 100) * 0.9)
+      });
+    });
+  }
+  return { promo, ventas };
+}
+
+/* ===== Interfaz Ada para KAM ===== */
+(function () {
+const $ = (id) => document.getElementById('ak-' + id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const P = (x) => x == null ? '–' : (x >= 0 ? '+' : '') + Math.round(x * 100) + '%';
+const cls = (x) => (x == null || Math.abs(x) < 0.005) ? '' : x > 0 ? 'up' : 'down';
+const MN = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+const perLabel = (p) => p ? MN[+p.slice(5) - 1] + ' ' + p.slice(0, 4) : '–';
+const state = { promo: null, ventas: null, map: { promo: {}, ventas: {} }, res: null, sel: null, tierOv: {} };
+let charts = [], brandChart = null;
+const TIERS = { 1: 'Tier 1 (grande)', 2: 'Tier 2 (mediano)', 3: 'Longtail (pequeño)' };
+const tierOf = (b) => state.tierOv[b.name] != null ? (state.tierOv[b.name] || null) : b.tier;
+
+function money(n) {
+  const u = state.res && state.res.useNNS;
+  const a = Math.abs(n), s = a >= 1e9 ? (n / 1e9).toFixed(1) + ' mil M' : a >= 1e6 ? (n / 1e6).toFixed(1) + ' M' : Math.round(n).toLocaleString('es-CL');
+  return u ? '$' + s : s + ' un.';
+}
+
+/* --- lectura de archivos --- */
+function parseSheet(ws) {
+  const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null, raw: true });
+  const h = rows.findIndex(r => r.filter(v => typeof v === 'string' && v.trim()).length >= 3);
+  if (h < 0) throw new Error('No encontré una fila de encabezados con al menos 3 columnas de texto.');
+  const seen = {};
+  const headers = rows[h].map((v, i) => { let n = (v == null || String(v).trim() === '') ? 'Columna ' + (i + 1) : String(v).trim(); if (seen[n]) { seen[n]++; n += ' (' + seen[n] + ')'; } else seen[n] = 1; return n; });
+  const out = [];
+  for (const r of rows.slice(h + 1)) {
+    if (!r.some(v => v != null && v !== '')) continue;
+    const o = {}; headers.forEach((k, i) => { o[k] = r[i] === undefined ? null : r[i]; }); out.push(o);
+  }
+  return { headers, rows: out };
+}
+async function readFiles(files) {
+  $('errs').innerHTML = '';
+  for (const f of files) {
+    try {
+      const wb = XLSX.read(await f.arrayBuffer(), { type: 'array' });
+      classify(parseSheet(wb.Sheets[wb.SheetNames[0]]), f.name);
+    } catch (e) { $('errs').innerHTML += '<div class="err">No pude leer “' + esc(f.name) + '”: ' + esc(e.message) + '</div>'; }
+  }
+}
+function classify(t, label) {
+  const mp = detectMapping('promo', t.headers), mv = detectMapping('ventas', t.headers);
+  let kind;
+  if (mp.pct && mp.mes && mp.codigo) kind = 'promo';
+  else if (mv.cant && mv.periodo && mv.codigo) kind = 'ventas';
+  else kind = !state.promo ? 'promo' : 'ventas';
+  setTable(kind, t, label);
+}
+function setTable(kind, t, label) {
+  state[kind] = t; state.map[kind] = detectMapping(kind, t.headers);
+  const cap = kind === 'promo' ? 'Promo' : 'Ventas';
+  $('s' + cap).textContent = '✓ ' + label + ' · ' + t.rows.length.toLocaleString('es-CL') + ' filas';
+  $('slot' + cap).classList.add('ok');
+  renderMapping(kind); refresh();
+}
+function renderMapping(kind) {
+  const t = state[kind], m = state.map[kind], box = $('m' + (kind === 'promo' ? 'Promo' : 'Ventas'));
+  const missing = FIELDS[kind].filter(f => f.req && !m[f.k]);
+  let html = '<details' + (missing.length ? ' open' : '') + '><summary>' + (missing.length ? '⚠ Faltan columnas: indícalas' : 'Revisar columnas detectadas') + '</summary><div class="map">';
+  for (const f of FIELDS[kind]) html += '<span>' + esc(f.label) + '</span><select data-kind="' + kind + '" data-k="' + f.k + '"><option value="">— ninguna —</option>' + t.headers.map(h => '<option value="' + esc(h) + '"' + (m[f.k] === h ? ' selected' : '') + '>' + esc(h) + '</option>').join('') + '</select>';
+  box.innerHTML = html + '</div></details>';
+  box.querySelectorAll('select').forEach(s => s.addEventListener('change', () => { if (s.value) state.map[kind][s.dataset.k] = s.value; else delete state.map[kind][s.dataset.k]; refresh(); }));
+}
+function refresh() {
+  const ok = (k) => state[k] && FIELDS[k].filter(f => f.req).every(f => state.map[k][f.k]);
+  $('run').disabled = !(ok('promo') && ok('ventas'));
+}
+function useSample() {
+  const s = makeSample(), mk = (rows) => ({ headers: Object.keys(rows[0]), rows });
+  setTable('promo', mk(s.promo), 'ejemplo ficticio'); setTable('ventas', mk(s.ventas), 'ejemplo ficticio'); run();
+}
+
+/* --- análisis --- */
+function run() {
+  $('errs').innerHTML = '';
+  try {
+    state.res = analyze(state.promo.rows, state.ventas.rows, state.map.promo, state.map.ventas);
+    const r = state.res; state.tierOv = {};
+    const urgent = (b) => actionsFor(r, b, tierOf(b)).filter(a => a.prio === 1).length;
+    state.sel = ([...r.brands].sort((a, b) => urgent(b) - urgent(a))[0] || {}).name;
+    $('out').classList.remove('hide'); renderAll(); $('out').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (e) { $('out').classList.add('hide'); $('errs').innerHTML = '<div class="err">' + esc(e.message) + '</div>'; }
+}
+function renderAll() { renderCartera(); renderBrand(); renderHow(); }
+
+function renderCartera() {
+  const r = state.res, box = $('cartera');
+  if (r.brands.length < 2) { box.classList.add('hide'); return; }
+  box.classList.remove('hide');
+  box.innerHTML = '<div class="step"><div class="num">2</div><h2>Tus clientes de un vistazo</h2></div><p class="note" style="margin:0 0 8px">Haz clic en un cliente para ver qué te sugiere Ada.</p><div style="overflow-x:auto"><table><tr><th>Cliente</th><th>Tipo</th><th>Ventas últimos 3 meses</th><th>Tendencia</th><th>Para atender</th></tr>' +
+    r.brands.map(b => {
+      const A = actionsFor(r, b, tierOf(b)), u = A.filter(a => a.prio === 1).length, t = tierOf(b), l3 = b.series.slice(-3).reduce((s, x) => s + x.v, 0);
+      return '<tr class="pick' + (b.name === state.sel ? ' sel' : '') + '" data-b="' + esc(b.name) + '"><td><b>' + esc(b.name) + '</b></td><td>' + (t ? TIERS[t].split(' ')[0] === 'Longtail' ? 'Longtail' : 'Tier ' + t : 'Sin definir') + '</td><td>' + money(l3) + '</td><td class="' + cls(b.trend) + '">' + P(b.trend) + '</td><td>' + (u ? '<span class="tag p1">' + u + ' urgente' + (u > 1 ? 's' : '') + '</span>' : '<span class="tag p3">Sin urgentes</span>') + '</td></tr>';
+    }).join('') + '</table></div>';
+  box.querySelectorAll('tr.pick').forEach(tr => tr.addEventListener('click', () => { state.sel = tr.dataset.b; renderCartera(); renderBrand(); $('brand').scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
+}
+
+function renderBrand() {
+  const r = state.res, b = r.brands.find(x => x.name === state.sel) || r.brands[0], box = $('brand');
+  if (!b) { box.innerHTML = ''; return; }
+  const tier = tierOf(b), A = actionsFor(r, b, tier), l3 = b.series.slice(-3).reduce((s, x) => s + x.v, 0);
+  const prods = r.products.filter(p => p.brand === b.name).sort((a, c) => c.baseU - a.baseU);
+  const stepN = r.brands.length > 1 ? 3 : 2;
+  let html = '<div class="card"><div class="head"><div class="step" style="margin:0"><div class="num">' + stepN + '</div><h2>' + esc(b.name) + '</h2></div>' +
+    '<label class="note">Tipo de cliente: <select id="ak-tier"><option value="0">Sin definir</option>' + [1, 2, 3].map(t => '<option value="' + t + '"' + (tier === t ? ' selected' : '') + '>' + TIERS[t] + '</option>').join('') + '</select></label></div>' +
+    '<div class="kpis">' +
+    '<div class="kpi"><b>' + money(l3) + '</b><span>vendidos en los últimos 3 meses</span></div>' +
+    '<div class="kpi"><b class="' + cls(b.trend) + '">' + P(b.trend) + '</b><span>tendencia de ventas normales vs. los 3 meses anteriores</span></div>' +
+    '<div class="kpi"><b>' + Math.round(b.promoShare * 100) + '%</b><span>de sus ventas ocurre en meses con promoción</span></div>' +
+    '<div class="kpi"><b>' + P(b.avgUp) + '</b><span>alza promedio de sus promociones</span></div></div>' +
+    '<h3>Ventas por mes <span class="note" style="font-weight:400">· en naranja, los meses con promoción</span></h3><div class="chartbox" style="height:200px"><canvas id="ak-cBrand"></canvas></div></div>';
+
+  html += '<div class="card"><div class="head"><h2>Lo que Ada te sugiere hacer</h2><button id="ak-copyA">Copiar acciones</button></div><p class="note" style="margin:0 0 10px">Ordenado por prioridad.</p>' +
+    A.map(a => '<div class="act k-' + a.kind + ' ap' + a.prio + '"><span class="tag p' + a.prio + '">' + (a.prio === 1 ? 'Prioridad alta' : a.prio === 2 ? 'Prioridad media' : 'Para tener en cuenta') + '</span><h3>' + esc(a.title) + '</h3>' +
+      (a.why ? '<p><span class="lbl">Por qué</span> ' + esc(a.why) + '</p>' : '') + '<p><span class="lbl">Qué hacer</span> ' + esc(a.how) + '</p>' +
+      (a.items.length ? '<ul>' + a.items.map(i => '<li>' + esc(i) + '</li>').join('') + '</ul>' : '') + '</div>').join('') +
+    '<div style="margin-top:6px"><button class="pri" id="ak-ask">Redactar resumen para la reunión con el cliente</button> <span class="note" id="ak-askNote"></span></div><div id="ak-ada"></div></div>';
+
+  html += '<div class="card"><h2>Detalle por producto</h2><div style="overflow-x:auto"><table><tr><th>Producto</th><th>Tendencia</th><th>Última promoción</th><th>Sugerencia de Ada</th><th>Confianza</th></tr>' +
+    prods.map(p => '<tr><td>' + esc(p.desc) + '</td><td class="' + cls(p.trend) + '">' + P(p.trend) + '</td><td>' + perLabel(p.lastPromo) + '</td><td>' + esc(p.band.top.key + (p.tipo ? ' · ' + p.tipo.top.key : '') + (p.dur ? ' · ' + p.dur.top.key : '')) + ' <span class="note">(' + P(p.band.top.score) + ')</span></td><td><span class="tag ' + p.conf + '">' + p.conf + '</span></td></tr>').join('') + '</table></div></div>';
+  box.innerHTML = html;
+
+  if (brandChart) brandChart.destroy();
+  brandChart = new Chart($('cBrand'), { type: 'bar', data: { labels: b.series.map(s => perLabel(s.per)), datasets: [{ data: b.series.map(s => Math.round(s.v)), backgroundColor: b.series.map(s => s.promos ? '#ff441f' : '#c9ced6') }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => money(c.parsed.y) + (b.series[c.dataIndex].promos ? ' · ' + b.series[c.dataIndex].promos + ' producto(s) en promo' : '') } } }, scales: { y: { ticks: { callback: v => money(v) } } } } });
+  $('tier').addEventListener('change', e => { state.tierOv[b.name] = +e.target.value; renderCartera(); renderBrand(); });
+  $('copyA').addEventListener('click', () => copy(actionsText(b, A), $('copyA')));
+  $('ask').addEventListener('click', () => ask(b, A, tier));
+}
+
+function actionsText(b, A) {
+  return 'Acciones sugeridas · ' + b.name + '\n\n' + A.map((a, i) => (i + 1) + '. ' + a.title + (a.why ? '\n   Por qué: ' + a.why : '') + '\n   Qué hacer: ' + a.how + a.items.map(x => '\n   - ' + x).join('')).join('\n\n');
+}
+async function copy(text, btn) {
+  const old = btn.textContent;
+  try { await navigator.clipboard.writeText(text); btn.textContent = '✓ Copiado'; } catch (e) { btn.textContent = 'No se pudo copiar'; }
+  setTimeout(() => { btn.textContent = old; }, 1800);
+}
+
+async function ask(b, A, tier) {
+  const out = $('ada'), btn = $('ask'); out.innerHTML = '';
+  let sample = null; try { sample = await claude.use('sample'); } catch (e) { }
+  if (!sample) { $('askNote').textContent = 'La redacción con IA no está disponible en esta vista.'; return; }
+  const data = { marca: b.name, tipo_cliente: tier ? TIERS[tier] : 'sin definir', ventas_normales_tendencia_pct: b.trend == null ? null : Math.round(b.trend * 100), pct_ventas_en_meses_con_promo: Math.round(b.promoShare * 100),
+    acciones: A.slice(0, 5).map(a => ({ titulo: a.title, por_que: a.why, que_hacer: a.how, ejemplos: a.items.slice(0, 3) })) };
+  const prompt = 'Eres Ada, asistente de Rappi Ads. Redacta, en español cercano y sin jerga, un resumen de máximo 110 palabras que el KAM pueda usar en su reunión con el cliente: cómo viene la marca y qué se propone hacer. Sin listas. Usa SOLO las cifras del JSON; no inventes ninguna. Si hay datos con confianza baja, dilo con honestidad.\n\nJSON:\n' + JSON.stringify(data);
+  btn.disabled = true; out.innerHTML = '<div class="ada">Ada está redactando…</div>';
+  try {
+    const res = await sample(prompt, { onText: ({ text }) => { out.innerHTML = '<div class="ada">' + esc(text) + '</div>'; } });
+    out.innerHTML = '<div class="ada">' + esc(res.text) + '</div><div style="margin-top:8px"><button id="ak-copyS">Copiar resumen</button></div>';
+    $('copyS').addEventListener('click', () => copy(res.text, $('copyS')));
+  } catch (e) { out.innerHTML = '<div class="warn">No se pudo generar el resumen (' + esc(e.code || e.message || 'error') + ').</div>'; }
+  btn.disabled = false;
+}
+
+/* --- patrones generales --- */
+function miniTable(title, list, label) {
+  if (!list.length) return '';
+  return '<div><h3>' + title + '</h3><table><tr><th>' + label + '</th><th>Alza promedio</th><th>Promos</th></tr>' + list.map(g => '<tr><td>' + esc(g.key) + '</td><td>' + P(g.up) + '</td><td>' + g.n + '</td></tr>').join('') + '</table></div>';
+}
+function renderHow() {
+  const r = state.res, g = r.global;
+  charts.forEach(c => c.destroy()); charts = [];
+  const ds = [];
+  if (r.useNNS) ds.push({ label: 'Ventas netas (NNS)', data: g.band.map(b => Math.round(b.up * 100)), backgroundColor: '#ff441f' });
+  ds.push({ label: 'Unidades', data: g.band.map(b => Math.round(b.upU * 100)), backgroundColor: '#c9ced6' });
+  charts.push(new Chart($('cBand'), { type: 'bar', data: { labels: g.band.map(b => b.key + ' (n=' + b.n + ')'), datasets: ds }, options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, scales: { y: { ticks: { callback: v => v + '%' } } } } }));
+  charts.push(new Chart($('cSeas'), { type: 'line', data: { labels: MN, datasets: [{ data: MN.map((_, i) => +r.seas[i + 1].toFixed(2)), borderColor: '#ff441f', backgroundColor: '#ff441f', tension: .25, pointRadius: 3 }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { suggestedMin: .8 } } } }));
+  $('extra').innerHTML = '<div class="grid2">' + miniTable('Por tipo de anuncio', g.tipo, 'Tipo') + miniTable('Por duración de la campaña', g.dur, 'Duración') + '</div>' + r.warn.map(w => '<div class="warn">' + esc(w) + '</div>').join('');
+  // los gráficos dentro de <details> cerrado miden 0: se redibujan al abrir
+  $('how').addEventListener('toggle', () => charts.forEach(c => c.resize()));
+}
+
+$('files').addEventListener('change', e => e.target.files.length && readFiles([...e.target.files]));
+$('sample').addEventListener('click', useSample);
+$('run').addEventListener('click', run);
+const dz = $('drop');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('on'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('on'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('on'); if (e.dataTransfer.files.length) readFiles([...e.dataTransfer.files]); });
+})();
+</script></body></html>
