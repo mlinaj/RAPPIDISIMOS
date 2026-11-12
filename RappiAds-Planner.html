@@ -387,7 +387,7 @@ function rangeFill(el){el.style.setProperty('--p',((el.value-el.min)/(el.max-el.
 /* ===== 00 Inicio de sesión ===== */
 def('00','00 · Inicio de sesión',function(){
   return '<div class="auth">'+authL('Tu publicidad en Rappi,<br>con ADA de tu lado.','ADA propone, tú apruebas. Reparte tu presupuesto, revisa sugerencias y mide tu ROAS en un solo lugar.',['Tus campañas en minutos','Sugerencias que explican como manejarte','Resultados y ROAS en vivo'])+
-  '<div class="auth-r"><div class="box"><h3>Inicia sesión</h3><p class="sub" style="font-size:15px;margin:6px 0 20px">Entra a tu cuenta empresa</p>'+
+  '<div class="auth-r"><div class="box"><h3>Inicia sesión <span aria-hidden="true" style="color:var(--coral)">♥</span></h3><p class="sub" style="font-size:15px;margin:6px 0 20px">Entra a tu cuenta empresa</p>'+
   '<label class="fl" for="l1" style="margin-top:0">Correo</label>'+field('login.email','','','email').replace('class="field','id="l1" class="field')+
   '<label class="fl" for="l2">Contraseña</label>'+field('login.pass','','','password').replace('class="field','id="l2" class="field')+
   '<div style="text-align:right;margin:10px 0 18px"><button class="link" style="text-decoration:underline" data-a="toast" data-v="Te enviaríamos un correo para crear una contraseña nueva (simulado)">¿Olvidaste tu contraseña?</button></div>'+
