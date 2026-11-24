@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ada para KAM · RappiAds Planner</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f5f5}
+.hide{display:none!important}
+#ak-top{background:#fff;border-bottom:4px solid #ff441f;display:flex;justify-content:space-between;align-items:center;padding:12px 32px;font-family:Poppins,system-ui,sans-serif}
+#ak-top .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;color:#1d1d1f;letter-spacing:-.01em}
+#ak-top .logo i{width:38px;height:38px;border-radius:12px;background:#ff441f;color:#fff;font-style:normal;display:grid;place-items:center;font-size:22px}
+#ak-top .logo em{color:#ff441f;font-style:normal;margin:0 3px}
+#ak-top .who{font-weight:500;color:#1d1d1f}
+#ada-kam{--ink:#1d1d1f;--mute:#6b6b6b;--line:#ececec;--acc:#ff441f;--peach:#ffe6de;--green:#1b9e5a;--gbg:#e3f6ea;--ybg:#fdf0d2;--yink:#8a6100;
+  color:var(--ink);font:15px/1.5 Poppins,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;max-width:1240px;margin:0 auto;padding:18px 32px 60px}
+#ada-kam *{box-sizing:border-box}
+#ada-kam .crumb{color:var(--mute);font-size:14px;margin:0 0 6px}
+#ada-kam .titlerow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:4px}
+#ada-kam h1{font-size:36px;margin:0;font-weight:600;letter-spacing:-.02em;line-height:1.15}
+#ada-kam h2{font-size:21px;margin:0 0 4px;font-weight:600;letter-spacing:-.01em}
+#ada-kam h3{font-size:15px;margin:0 0 4px;font-weight:600}
+#ada-kam .sub{color:var(--mute);margin:0 0 22px;font-size:16px}
+#ada-kam .badge{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;padding:5px 14px;border-radius:99px;background:var(--gbg);color:var(--green)}
+#ada-kam .badge:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green)}
+#ada-kam .card{background:#fff;border:1px solid var(--line);border-radius:26px;padding:26px 28px;margin-bottom:20px}
+#ada-kam .step{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+#ada-kam .num{width:28px;height:28px;border-radius:50%;background:var(--acc);color:#fff;font-weight:600;display:grid;place-items:center;font-size:13px;flex:none}
+#ada-kam .note{color:var(--mute);font-size:13px}
+#ada-kam .drop{border:2px dashed #ffb9a8;border-radius:22px;padding:30px 16px;background:#fff8f6;text-align:center}
+#ada-kam .drop.on{border-color:var(--acc);background:var(--peach)}
+#ada-kam .drop b{font-size:17px;font-weight:600;display:block}
+#ada-kam .drop input{margin-top:12px;max-width:100%;font-family:inherit}
+#ada-kam .files{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:760px){#ada-kam .files{grid-template-columns:1fr}}
+#ada-kam .slot{border:1px solid var(--line);border-radius:18px;padding:12px 16px;font-size:13.5px}
+#ada-kam .slot.ok{border-color:#bfe8cf;background:#f4fbf7}
+#ada-kam .slot b{display:block;font-weight:600}
+#ada-kam button{font:inherit;font-weight:500;cursor:pointer;border-radius:99px;border:0;background:#f0f0f0;color:var(--ink);padding:10px 20px}
+#ada-kam button:hover{background:#e7e7e7}
+#ada-kam button.pri{background:var(--acc);color:#fff;font-weight:600}
+#ada-kam button.pri:hover{background:#e83a16}
+#ada-kam button:disabled{opacity:.5;cursor:default}
+#ada-kam details{margin-top:8px;font-size:13px}
+#ada-kam summary{cursor:pointer;color:var(--mute)}
+#ada-kam .map{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;margin-top:8px}
+#ada-kam select{font:inherit;font-size:13.5px;padding:6px 12px;max-width:100%;border-radius:99px;border:0;background:#f0f0f0}
+#ada-kam .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:16px 0}
+@media(max-width:860px){#ada-kam .kpis{grid-template-columns:repeat(2,1fr)}}
+#ada-kam .kpi{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px 20px;display:flex;flex-direction:column}
+#ada-kam .kpi span{order:-1;text-transform:uppercase;letter-spacing:.07em;color:var(--mute);font-size:11px;margin-bottom:6px}
+#ada-kam .kpi b{font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.2}
+#ada-kam .up{color:var(--green)}#ada-kam .down{color:#d92d20}
+#ada-kam table{width:100%;border-collapse:collapse;font-size:14px}
+#ada-kam th{text-align:left;color:var(--mute);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line);padding:8px 10px}
+#ada-kam td{border-bottom:1px solid #f3f3f3;padding:12px 10px}
+#ada-kam tr.pick{cursor:pointer}#ada-kam tr.pick:hover td{background:#fff8f6}#ada-kam tr.sel td{background:var(--peach)}
+#ada-kam tr.sel td:first-child{border-radius:14px 0 0 14px}#ada-kam tr.sel td:last-child{border-radius:0 14px 14px 0}
+#ada-kam .tag{font-size:12px;padding:3px 12px;border-radius:99px;font-weight:500;white-space:nowrap;display:inline-block}
+#ada-kam .Alta{background:var(--gbg);color:var(--green)}#ada-kam .Media{background:var(--ybg);color:var(--yink)}#ada-kam .Baja{background:#fde4e1;color:#b42318}
+#ada-kam .p1{background:var(--acc);color:#fff}#ada-kam .p2{background:var(--ybg);color:var(--yink)}#ada-kam .p3{background:#eee;color:#555}
+#ada-kam .act{border:1px solid var(--line);border-radius:22px;padding:18px 22px;margin-bottom:14px;background:#fff}
+#ada-kam .act.ap1{background:var(--peach);border-color:#ffd0c2}
+#ada-kam .act.k-servicio{border:1.5px solid #ffb9a8}
+#ada-kam .act h3{font-size:17px;margin:8px 0 6px}
+#ada-kam .act p{margin:3px 0;font-size:14px}
+#ada-kam .act ul{margin:8px 0 2px;padding-left:18px;font-size:13.5px;color:#3b3b3b}
+#ada-kam .lbl{font-weight:600;color:var(--mute);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-right:4px}
+#ada-kam .head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+#ada-kam .chartbox{position:relative;height:260px}
+#ada-kam .charts{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+@media(max-width:860px){#ada-kam .charts{grid-template-columns:1fr}}
+#ada-kam .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:860px){#ada-kam .grid2{grid-template-columns:1fr}}
+#ada-kam .warn{background:#fffaeb;border:1px solid #fedf89;color:#7a4b00;border-radius:16px;padding:10px 14px;font-size:13px;margin:8px 0}
+#ada-kam .err{background:#fef3f2;border:1px solid #fecdca;color:#b42318;border-radius:16px;padding:12px 14px;font-size:13.5px;margin:8px 0}
+#ada-kam .ada{background:var(--peach);border-radius:22px;padding:16px 20px;margin-top:12px;white-space:pre-wrap;font-weight:500}
+#ada-kam .hide{display:none}
+
+#ada-kam .banner{border-radius:16px;padding:10px 16px;font-size:13.5px;margin-bottom:16px;display:flex;gap:8px;align-items:center}
+#ada-kam .banner.ok{background:var(--gbg);color:#14663d}
+#ada-kam .banner.local{background:var(--ybg);color:var(--yink)}
+#ada-kam .banner.bad{background:#fde4e1;color:#b42318}
+#ada-kam .tabs{display:flex;gap:10px;margin:14px 0 18px;flex-wrap:wrap}
+#ada-kam .tabs button{background:#f0f0f0}
+#ada-kam .tabs button.on{background:var(--acc);color:#fff;font-weight:600}
+#ada-kam .tabs button.dis{opacity:.55}
+#ada-kam .flow{display:grid;grid-template-columns:260px 1fr;gap:22px;align-items:start}
+@media(max-width:900px){#ada-kam .flow{grid-template-columns:1fr}}
+#ada-kam .stepper{position:sticky;top:12px;background:#fff;border:1px solid var(--line);border-radius:24px;padding:14px}
+#ada-kam .stepper button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:transparent;border-radius:16px;padding:10px 12px;font-weight:500;font-size:14px}
+#ada-kam .stepper button:hover{background:#faf5f3}
+#ada-kam .stepper button.on{background:var(--peach)}
+#ada-kam .dot{width:26px;height:26px;border-radius:50%;border:2px solid #d0d0d0;display:grid;place-items:center;font-size:12px;font-weight:600;flex:none;color:#888}
+#ada-kam .stepper button.done .dot{background:var(--green);border-color:var(--green);color:#fff}
+#ada-kam .stepper button.on .dot{border-color:var(--acc);color:var(--acc)}
+#ada-kam .stepper button.done.on .dot{color:#fff}
+#ada-kam .bar{height:8px;border-radius:99px;background:#eee;overflow:hidden;margin:6px 0 10px}
+#ada-kam .bar i{display:block;height:100%;background:var(--acc);border-radius:99px}
+#ada-kam .dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:12px 0}
+@media(max-width:1000px){#ada-kam .dgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){#ada-kam .dgrid{grid-template-columns:1fr}}
+#ada-kam .dc{border:1px solid var(--line);border-radius:20px;padding:16px 18px;background:#fff}
+#ada-kam .dc .k{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--mute);display:flex;justify-content:space-between;gap:6px}
+#ada-kam .dc b{display:block;font-size:26px;font-weight:600;letter-spacing:-.02em;margin:4px 0 2px}
+#ada-kam .dc p{margin:0;font-size:13px;color:#444}
+#ada-kam .est{font-size:10.5px;text-transform:none;letter-spacing:0;background:#eee;color:#555;border-radius:99px;padding:1px 8px;white-space:nowrap}
+#ada-kam .field{margin:12px 0}
+#ada-kam .field label{display:block;font-weight:600;font-size:13px;margin-bottom:4px}
+#ada-kam input[type=text],#ada-kam input[type=number],#ada-kam input[type=date],#ada-kam textarea{width:100%;font:inherit;font-size:14px;padding:10px 14px;border:1px solid var(--line);border-radius:16px;background:#fff}
+#ada-kam textarea{min-height:90px;resize:vertical}
+#ada-kam input:focus,#ada-kam textarea:focus,#ada-kam select:focus{outline:2px solid #ffb9a8}
+#ada-kam .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){#ada-kam .row2{grid-template-columns:1fr}}
+#ada-kam .chk{display:flex;gap:10px;align-items:flex-start;padding:8px 0;font-size:14px}
+#ada-kam .chk input{margin-top:4px;accent-color:var(--acc)}
+#ada-kam .opt{display:block;border:1.5px solid var(--line);border-radius:18px;padding:12px 16px;margin:8px 0;cursor:pointer}
+#ada-kam .opt.on{border-color:var(--acc);background:#fff8f6}
+#ada-kam .opt input{margin-right:8px;accent-color:var(--acc)}
+#ada-kam .opt small{display:block;color:var(--mute);margin-left:24px}
+#ada-kam .verdict{border-radius:18px;padding:12px 16px;margin-top:10px;font-size:14px}
+#ada-kam .v-ok{background:var(--gbg)}#ada-kam .v-mid{background:var(--ybg)}#ada-kam .v-bad{background:#fde4e1}
+#ada-kam .log{font-size:13px}
+#ada-kam .log div{padding:7px 0;border-bottom:1px solid #f3f3f3}
+#ada-kam .log span{color:var(--mute);font-size:12px}
+#ada-kam .back{background:transparent;padding:4px 0;color:var(--mute)}
+#ada-kam .back:hover{background:transparent;color:var(--ink)}
+#ada-kam .link{background:transparent;color:var(--acc);padding:2px 6px;font-weight:600}
+#ada-kam .link:hover{background:transparent;text-decoration:underline}
+#ada-kam .soon{opacity:.75}
+#ada-kam .soon li{margin:3px 0}
+#ada-kam .w{width:90px}
+#ada-kam .chip{display:inline-block;background:#f0f0f0;border-radius:99px;padding:3px 12px;font-size:12.5px;margin:2px 4px 2px 0}
+#ada-kam .me{font-style:italic}
+
+#ada-kam{max-width:1360px}
+#ada-kam .shell{display:grid;grid-template-columns:230px 1fr;gap:26px;align-items:start}
+@media(max-width:900px){#ada-kam .shell{grid-template-columns:1fr}}
+#ak-nav{position:sticky;top:12px;background:#fff;border:1px solid #ececec;border-radius:24px;padding:12px;font-family:Poppins,system-ui,sans-serif}
+#ak-nav button{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:16px;padding:12px 14px;font:inherit;font-weight:500;cursor:pointer;color:#1d1d1f}
+#ak-nav button:hover{background:#faf5f3}
+#ak-nav button.on{background:#ffe6de;font-weight:600}
+#ak-nav hr{border:0;border-top:1px solid #ececec;margin:8px 4px}
+#ak-nav .sm{font-size:13px;color:#6b6b6b}
+.bellbtn{font:inherit;font-weight:500;cursor:pointer;border-radius:99px;border:0;background:#f0f0f0;padding:8px 16px;font-family:Poppins,system-ui,sans-serif}
+.bellbtn:hover{background:#e7e7e7}
+.badgeN{display:inline-block;background:#ff441f;color:#fff;border-radius:99px;font-size:11px;font-weight:600;padding:1px 7px;margin-left:4px}
+#ak-drawer{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.25);font-family:Poppins,system-ui,sans-serif}
+#ak-drawer .panel{position:absolute;right:0;top:0;bottom:0;width:min(420px,100%);background:#fff;padding:20px 22px;overflow:auto;box-shadow:-8px 0 30px rgba(0,0,0,.12)}
+#ak-drawer h2{margin:0 0 8px;font-size:20px}
+#ak-drawer .ent{padding:10px 0;border-bottom:1px solid #f1f1f1;font-size:13.5px}
+#ak-drawer .ent span{color:#6b6b6b;font-size:12px}
+#ak-drawer button{font:inherit;cursor:pointer;border-radius:99px;border:0;background:#f0f0f0;padding:6px 14px}
+#ak-drawer select{font:inherit;font-size:13px;padding:6px 12px;border-radius:99px;border:0;background:#f0f0f0;margin:6px 0}
+#ak-drawer .lk{background:transparent;color:#ff441f;font-weight:600;padding:0}
+#ak-toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:60;font-family:Poppins,system-ui,sans-serif}
+#ak-toasts .toast{background:#1d1d1f;color:#fff;border-radius:18px;padding:12px 16px;max-width:340px;font-size:13.5px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+#ak-toasts .toast button{background:#ff441f;color:#fff;border:0;border-radius:99px;padding:4px 12px;margin-top:6px;font:inherit;font-size:12.5px;cursor:pointer}
+#ada-kam .locked{opacity:.5}
+#ada-kam .gate{border:2px dashed #ffb9a8;border-radius:22px;padding:20px;background:#fff8f6}
+#ada-kam .stepper .sep{border:0;border-top:1px dashed #ffb9a8;margin:6px 8px}
+#ada-kam .compact .row2{gap:8px}
+#ada-kam table.t5 td:first-child{font-weight:600;width:34%}
+#ada-kam .rowform{display:grid;grid-template-columns:1.4fr 1fr .7fr .7fr 1fr auto;gap:8px;align-items:center;margin-top:8px}
+@media(max-width:900px){#ada-kam .rowform{grid-template-columns:1fr 1fr}}
+#ada-kam .rowform.l{grid-template-columns:140px 1.4fr 1.4fr auto}
+#ada-kam .dec{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+#ada-kam .dec button{padding:5px 14px;font-size:13px}
+#ada-kam .dec button.on{background:var(--acc);color:#fff}
+#ada-kam .dec textarea{min-height:56px;margin-top:6px}
+#ada-kam .tip{font-size:13px;color:#6b6b6b;margin:4px 0}
+</style>
+</head>
+<body>
+<header id="ak-top"><div class="logo"><i>A</i><div>Ads<em>·</em>Planner</div></div><div style="display:flex;align-items:center;gap:14px"><button id="ak-bell" data-act="drawer" class="bellbtn">Registro <span id="ak-badge" class="badgeN hide">0</span></button><div class="who" id="ak-who">Vista KAM</div></div></header>
+<div id="ada-kam">
+  <div id="ak-banner"></div>
+  <div class="shell"><nav id="ak-nav"></nav><main id="ak-view"></main></div>
+</div>
+<div id="ak-drawer" class="hide"></div>
+<div id="ak-toasts"></div>
+<script>
+/* ===== Núcleo de Ada: lectura de columnas, análisis y recomendaciones (sin DOM) ===== */
+const FIELDS = {
+  promo: [
+    { k: 'codigo', label: 'Código del producto Rappi', req: true, alias: ['codigo producto rappi', 'codigo del producto para rappi', 'codigo rappi', 'cod rappi', 'sku rappi', 'item', 'sku', 'codigo producto', 'codigo'] },
+    { k: 'desc', label: 'Descripción', alias: ['descripcion de catalogo', 'descripcion catalogo', 'descripcion', 'producto', 'nombre'] },
+    { k: 'mes', label: 'Mes de activación', req: true, alias: ['mes de activacion', 'mes activacion', 'activacion', 'mes', 'periodo'] },
+    { k: 'pct', label: '% de descuento', req: true, alias: ['% de descuento', '% descuento', 'pct descuento', 'descuento'] },
+    { k: 'pctMarca', label: '% descuento que paga la marca', alias: ['% de descuento que nosotros vamos a pagar', 'que nosotros vamos a pagar', 'vamos a pagar', 'paga la marca', 'nosotros'] },
+    { k: 'pctRappi', label: '% descuento que paga Rappi', alias: ['% de descuento que ellos como empresa pagan', 'ellos como empresa pagan', 'empresa pagan', 'paga rappi', 'ellos'] },
+    { k: 'tipoAd', label: 'Tipo de anuncio (opcional)', alias: ['tipo de anuncio', 'tipo anuncio', 'tipo ad', 'formato de anuncio', 'anuncio'] },
+    { k: 'duracion', label: 'Duración en días (opcional)', alias: ['duracion dias', 'duracion en dias', 'duracion', 'dias'] },
+    { k: 'marca', label: 'Marca o cliente (opcional)', exactOnly: true, alias: ['marca', 'cliente', 'proveedor', 'empresa', 'brand'] }
+  ],
+  ventas: [
+    { k: 'codigo', label: 'Código del producto (item)', req: true, alias: ['item', 'codigo producto rappi', 'codigo rappi', 'sku rappi', 'codigo producto', 'codigo'] },
+    { k: 'periodo', label: 'Periodo', req: true, alias: ['periodo', 'mes', 'fecha'] },
+    { k: 'cant', label: 'Cantidad de unidades', req: true, alias: ['cantidad de unidades', 'cantidades', 'cantidad', 'unidades', 'unid'] },
+    { k: 'kilos', label: 'Kilos vendidos (opcional)', alias: ['kilos vendidos', 'kilos', 'kg'] },
+    { k: 'nns', label: 'NNS (opcional, ventas netas)', alias: ['nns', 'venta neta', 'ventas netas'] },
+    { k: 'inversion', label: 'Inversión en Rappi Ads (opcional)', alias: ['inversion en rappi ads', 'inversion publicitaria', 'inversion', 'gasto en ads', 'gasto publicitario', 'gasto'] },
+    { k: 'marca', label: 'Marca o cliente (opcional)', exactOnly: true, alias: ['marca', 'cliente', 'proveedor', 'empresa', 'brand'] }
+  ]
+};
+
+const norm = (s) => String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9%]+/g, ' ').trim();
+
+function detectMapping(kind, headers) {
+  const fields = FIELDS[kind], nh = headers.map(norm), used = new Set(), map = {};
+  // pasada 1: coincidencia exacta; pasada 2: el encabezado contiene el alias
+  for (const pass of [1, 2]) {
+    for (const f of fields) {
+      if (map[f.k] != null || (pass === 2 && f.exactOnly)) continue;
+      for (const a of f.alias) {
+        const an = norm(a);
+        const i = nh.findIndex((h, idx) => !used.has(idx) && h && (pass === 1 ? h === an : an.length >= 4 && h.includes(an)));
+        if (i >= 0) { map[f.k] = headers[i]; used.add(i); break; }
+      }
+    }
+  }
+  return map;
+}
+
+const MESES = { enero: 1, ene: 1, febrero: 2, feb: 2, marzo: 3, mar: 3, abril: 4, abr: 4, mayo: 5, may: 5, junio: 6, jun: 6, julio: 7, jul: 7, agosto: 8, ago: 8, septiembre: 9, setiembre: 9, sep: 9, sept: 9, octubre: 10, oct: 10, noviembre: 11, nov: 11, diciembre: 12, dic: 12 };
+const ym = (y, m) => (m >= 1 && m <= 12 && y >= 1990 && y <= 2100) ? y + '-' + String(m).padStart(2, '0') : null;
+
+function toPeriod(v) {
+  if (v == null || v === '') return null;
+  if (v instanceof Date) return ym(v.getUTCFullYear(), v.getUTCMonth() + 1);
+  if (typeof v === 'number') {
+    if (v > 20000 && v < 80000) { const d = new Date(Math.round((v - 25569) * 86400000)); return ym(d.getUTCFullYear(), d.getUTCMonth() + 1); }
+    if (v >= 199001 && v <= 209912) return ym(Math.floor(v / 100), v % 100);
+    return null;
+  }
+  const s = norm(v).replace(/ /g, '-'); let m;
+  const raw = String(v).trim().toLowerCase();
+  if ((m = raw.match(/^(\d{4})[-\/.](\d{1,2})/))) return ym(+m[1], +m[2]);
+  if ((m = raw.match(/^(\d{1,2})[-\/.](\d{4})$/))) return ym(+m[2], +m[1]);
+  if ((m = raw.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/))) return ym(+m[3], +m[2]); // dd/mm/aaaa
+  if ((m = raw.match(/^(\d{4})(\d{2})$/))) return ym(+m[1], +m[2]);
+  if ((m = s.match(/^([a-z]+)-?(\d{2,4})$/)) && MESES[m[1]]) { const y = +m[2] < 100 ? 2000 + +m[2] : +m[2]; return ym(y, MESES[m[1]]); }
+  return null;
+}
+
+function parseNum(v) {
+  if (v == null || v === '') return null;
+  if (typeof v === 'number') return isFinite(v) ? v : null;
+  let s = String(v).replace(/[%\s$]/g, '');
+  if (s.includes(',') && s.includes('.')) s = s.replace(/\./g, '').replace(',', '.');
+  else if (s.includes(',')) s = s.replace(',', '.');
+  const n = parseFloat(s); return isFinite(n) ? n : null;
+}
+function toPct(v) {
+  const n = parseNum(v); if (n == null) return null;
+  const hasSign = typeof v === 'string' && v.includes('%');
+  const p = (!hasSign && n <= 1) ? n * 100 : n;
+  return (p >= 0 && p <= 100) ? p : null;
+}
+
+const band = (p) => p <= 10 ? 'Hasta 10%' : p <= 20 ? '11–20%' : p <= 30 ? '21–30%' : 'Más de 30%';
+const BANDS = ['Hasta 10%', '11–20%', '21–30%', 'Más de 30%'];
+const durBand = (d) => d <= 7 ? 'Hasta 7 días' : d <= 14 ? '8–14 días' : 'Más de 14 días';
+const DURS = ['Hasta 7 días', '8–14 días', 'Más de 14 días'];
+const mean = (a) => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+const K_SHRINK = 3;
+
+function analyze(promoRows, ventasRows, mp, mv) {
+  const warn = [];
+  // --- promociones
+  let badPromo = 0;
+  const promoMap = new Map();
+  for (const r of promoRows) {
+    const cod = String(r[mp.codigo] ?? '').trim(), per = toPeriod(r[mp.mes]), pct = toPct(r[mp.pct]);
+    if (!cod || !per || pct == null) { badPromo++; continue; }
+    if (pct <= 0) continue; // sin descuento: no es promoción
+    const key = cod + '|' + per, prev = promoMap.get(key);
+    if (!prev || pct > prev.pct) promoMap.set(key, {
+      cod, per, pct, desc: mp.desc ? String(r[mp.desc] ?? '') : '',
+      tipo: mp.tipoAd && r[mp.tipoAd] ? String(r[mp.tipoAd]).trim() : null,
+      dur: mp.duracion ? parseNum(r[mp.duracion]) : null,
+      pm: mp.pctMarca ? toPct(r[mp.pctMarca]) : null
+    });
+  }
+  if (badPromo) warn.push(`${badPromo} filas de promociones se ignoraron (código, mes o % de descuento ilegible).`);
+  // --- ventas
+  let badVent = 0;
+  const sales = new Map();
+  for (const r of ventasRows) {
+    const cod = String(r[mv.codigo] ?? '').trim(), per = toPeriod(r[mv.periodo]), u = parseNum(r[mv.cant]);
+    if (!cod || !per || u == null) { badVent++; continue; }
+    const key = cod + '|' + per;
+    const s = sales.get(key) || { cod, per, u: 0, n: 0, hasN: false, k: 0, inv: 0, hasI: false };
+    if (mv.inversion) { const iv = parseNum(r[mv.inversion]); if (iv != null) { s.inv += iv; s.hasI = true; } }
+    s.u += u; if (mv.kilos) s.k += parseNum(r[mv.kilos]) || 0;
+    if (mv.nns) { const n = parseNum(r[mv.nns]); if (n != null) { s.n += n; s.hasN = true; } }
+    sales.set(key, s);
+  }
+  if (badVent) warn.push(`${badVent} filas de ventas se ignoraron (código, periodo o cantidad ilegible).`);
+  const useNNS = !!mv.nns && [...sales.values()].some(s => s.hasN);
+  const metric = (s) => useNNS ? s.n : s.u;
+  if (mv.nns && !useNNS) warn.push('La columna NNS no tiene valores numéricos: el análisis usa unidades.');
+  if (!mv.nns) warn.push('Sin columna NNS: las recomendaciones se calculan sobre unidades vendidas, no sobre ventas netas.');
+
+  // --- línea base por producto (meses sin promoción)
+  const byProd = new Map();
+  for (const s of sales.values()) { if (!byProd.has(s.cod)) byProd.set(s.cod, []); byProd.get(s.cod).push(s); }
+  const base = new Map();
+  for (const [cod, arr] of byProd) {
+    const nb = arr.filter(s => !promoMap.has(s.cod + '|' + s.per) && s.u > 0);
+    if (nb.length >= 2) base.set(cod, { u: mean(nb.map(s => s.u)), m: mean(nb.map(metric)), n: nb.length });
+  }
+  // --- estacionalidad mensual (con encogimiento hacia 1)
+  const acc = {};
+  for (const [cod, arr] of byProd) {
+    const b = base.get(cod); if (!b || !b.u) continue;
+    for (const s of arr) if (!promoMap.has(s.cod + '|' + s.per) && s.u > 0) {
+      const mth = +s.per.slice(5); (acc[mth] = acc[mth] || []).push(s.u / b.u);
+    }
+  }
+  const seas = {}; let tot = 0, cnt = 0;
+  for (let m = 1; m <= 12; m++) { const a = acc[m] || []; seas[m] = (a.reduce((x, y) => x + y, 0) + 2) / (a.length + 2); tot += seas[m]; cnt++; }
+  for (let m = 1; m <= 12; m++) seas[m] = seas[m] / (tot / cnt);
+
+  // --- observaciones de promoción (alza vs. lo esperable ese mes sin promo)
+  const obs = [];
+  for (const p of promoMap.values()) {
+    const s = sales.get(p.cod + '|' + p.per), b = base.get(p.cod);
+    if (!s || !b || !b.u || !b.m) continue;
+    const mth = +p.per.slice(5), sf = seas[mth] || 1;
+    const upU = s.u / (b.u * sf) - 1;
+    const up = useNNS ? (s.hasN ? s.n / (b.m * sf) - 1 : null) : upU;
+    if (up == null) continue;
+    obs.push({ cod: p.cod, desc: p.desc, per: p.per, pct: p.pct, band: band(p.pct), tipo: p.tipo, dur: p.dur, durBand: p.dur != null ? durBand(p.dur) : null, upU, up, pm: p.pm });
+  }
+  if (!obs.length) throw new Error('No se pudo cruzar ninguna promoción con ventas. Revisa que los códigos y los meses coincidan entre ambos archivos, y que cada producto tenga al menos 2 meses sin promoción.');
+
+  const groupStats = (arr, keyFn, order) => {
+    const g = {}; for (const o of arr) { const k = keyFn(o); if (k == null) continue; (g[k] = g[k] || []).push(o); }
+    const keys = order ? order.filter(k => g[k]) : Object.keys(g);
+    return keys.map(k => ({ key: k, n: g[k].length, up: mean(g[k].map(o => o.up)), upU: mean(g[k].map(o => o.upU)) }));
+  };
+  const global = {
+    band: groupStats(obs, o => o.band, BANDS),
+    tipo: groupStats(obs, o => o.tipo),
+    dur: groupStats(obs, o => o.durBand, DURS)
+  };
+  const gmean = (list, key) => (list.find(x => x.key === key) || {}).up;
+
+  // mejor grupo para un producto, con encogimiento hacia el promedio global
+  function best(prodObs, keyFn, globalList) {
+    const cand = globalList.filter(g => g.n >= 2);
+    if (!cand.length) return null;
+    const rows = cand.map(g => {
+      const mine = prodObs.filter(o => keyFn(o) === g.key);
+      const score = (mine.reduce((s, o) => s + o.up, 0) + K_SHRINK * g.up) / (mine.length + K_SHRINK);
+      return { key: g.key, nMine: mine.length, score, own: mine.length ? mean(mine.map(o => o.up)) : null, glob: g.up };
+    }).sort((a, b) => b.score - a.score);
+    return { top: rows[0], rows };
+  }
+
+  const products = [];
+  for (const cod of base.keys()) {
+    const po = obs.filter(o => o.cod === cod);
+    const bb = best(po, o => o.band, global.band);
+    if (!bb) continue;
+    const bt = global.tipo.length ? best(po, o => o.tipo, global.tipo) : null;
+    const bd = global.dur.length ? best(po, o => o.durBand, global.dur) : null;
+    const desc = (po.find(o => o.desc) || {}).desc || (promoRows.find(r => String(r[mp.codigo] ?? '').trim() === cod && mp.desc) || {})[mp.desc] || '';
+    const conf = po.length >= 4 ? 'Alta' : po.length >= 2 ? 'Media' : 'Baja';
+    products.push({ cod, desc: desc || cod, nPromos: po.length, conf, band: bb, tipo: bt, dur: bd, obs: po, baseU: base.get(cod).u });
+  }
+  products.sort((a, b) => b.band.top.score - a.band.top.score);
+
+  // --- marcas, tendencias y tipo de cliente
+  const prodBrand = new Map();
+  const fillBrand = (rows, m) => { if (!m.marca) return; for (const r of rows) { const c = String(r[m.codigo] ?? '').trim(), b = String(r[m.marca] ?? '').trim(); if (c && b && !prodBrand.has(c)) prodBrand.set(c, b); } };
+  fillBrand(ventasRows, mv); fillBrand(promoRows, mp);
+  const brandOf = (c) => prodBrand.get(c) || 'Todas las marcas';
+  const periods = [...new Set([...sales.values()].map(s => s.per))].sort();
+  const lastPer = periods[periods.length - 1];
+  const last3 = periods.slice(-3), prev3 = periods.slice(-6, -3);
+  const adj = (s) => metric(s) / (seas[+s.per.slice(5)] || 1);
+  const normalMean = (cod, pers) => { const a = (byProd.get(cod) || []).filter(s => pers.includes(s.per) && !promoMap.has(s.cod + '|' + s.per)).map(adj); return a.length ? mean(a) : null; };
+  const trendOf = (cod) => { if (prev3.length < 3) return null; const l = normalMean(cod, last3), p = normalMean(cod, prev3); return (l != null && p) ? { t: l / p - 1, l, p } : null; };
+  for (const p of products) {
+    const tr = trendOf(p.cod); p.trend = tr ? tr.t : null; p.brand = brandOf(p.cod);
+    p.promoRecent = last3.some(per => promoMap.has(p.cod + '|' + per));
+    const mine = [...promoMap.values()].filter(x => x.cod === p.cod).map(x => x.per).sort(); p.lastPromo = mine.length ? mine[mine.length - 1] : null;
+  }
+  const brandNames = [...new Set([...byProd.keys()].map(brandOf))];
+  const brands = brandNames.map(name => {
+    const codes = [...byProd.keys()].filter(c => brandOf(c) === name);
+    const series = periods.map(per => { let v = 0, pc = 0, iv = 0; for (const c of codes) { const s = sales.get(c + '|' + per); if (s) { v += metric(s); iv += s.inv; if (promoMap.has(c + '|' + per)) pc++; } } return { per, v, promos: pc, inv: iv }; });
+    let tot = 0, inPromo = 0;
+    for (const c of codes) for (const s of byProd.get(c)) { tot += metric(s); if (promoMap.has(s.cod + '|' + s.per)) inPromo += metric(s); }
+    let L = 0, Pv = 0, nT = 0;
+    for (const c of codes) { const tr = trendOf(c); if (tr) { L += tr.l; Pv += tr.p; nT++; } }
+    const ob = obs.filter(o => brandOf(o.cod) === name);
+    const sum = (arr, k, pers) => arr.filter(x => pers.includes(x.per)).reduce((a, x) => a + x[k], 0);
+    const invTot = series.reduce((a, x) => a + x.inv, 0), hasInv = invTot > 0;
+    let vInv = 0; for (const c of codes) for (const s of byProd.get(c)) if (s.inv > 0) vInv += metric(s);
+    const roas = (hasInv && useNNS) ? vInv / invTot : null;
+    const iL = sum(series, 'inv', last3), iP = sum(series, 'inv', prev3), sL = sum(series, 'v', last3), sP = sum(series, 'v', prev3);
+    const promoted = codes.filter(c => [...promoMap.keys()].some(k => k.startsWith(c + '|'))).length;
+    return { name, codes, series, hasInv, roas, invGrowth: (hasInv && iP > 0) ? iL / iP - 1 : null, salesGrowth: sP > 0 ? sL / sP - 1 : null, invShare: (hasInv && sL > 0) ? iL / sL : null, promoted, nPromoMonths: series.filter(x => x.promos > 0).length, promoLast3: series.slice(-3).filter(x => x.promos > 0).length, total: tot, promoShare: tot ? inPromo / tot : 0, trend: (nT && Pv) ? L / Pv - 1 : null, avgUp: ob.length ? mean(ob.map(o => o.up)) : null, obs: ob, nProducts: codes.length, tier: null };
+  }).sort((a, b) => b.total - a.total);
+  if (brands.length >= 3) brands.forEach((b, i) => { b.tier = i < Math.ceil(brands.length * 0.2) ? 1 : i < Math.ceil(brands.length * 0.5) ? 2 : 3; });
+  const nm = (lastPer ? (+lastPer.slice(5) % 12) + 1 : 1);
+  const planning = { month: nm, idx: seas[nm] || 1 };
+  if (!prev3.length || prev3.length < 3) warn.push('Hay menos de 6 meses de ventas: Ada no puede calcular tendencias de los últimos 3 meses.');
+
+  return {
+    warn, useNNS, obs, global, seas, products, brands, planning, lastPer, periods,
+    nProductos: base.size, nPromos: obs.length,
+    medianUp: (() => { const a = obs.map(o => o.up).sort((x, y) => x - y); return a[Math.floor(a.length / 2)]; })(),
+    gmean
+  };
+}
+
+/* ===== Señales estimadas (reglas simples, no datos duros) ===== */
+function riskOf(b) {
+  let p = 0; const why = [];
+  if (b.trend != null && b.trend <= -0.10) { p += 30; why.push('sus ventas normales caen ' + Math.round(-b.trend * 100) + '%'); } else if (b.trend != null && b.trend <= -0.05) { p += 15; why.push('sus ventas normales caen levemente'); }
+  if (b.promoLast3 === 0) { p += 25; why.push('no ha hecho campañas en los últimos 3 meses'); } else if (b.promoLast3 === 1) { p += 10; why.push('solo hizo campaña 1 de los últimos 3 meses'); }
+  if (b.roas != null && b.roas < 2) { p += 20; why.push('su retorno por $1 invertido es bajo (' + b.roas.toFixed(1).replace('.', ',') + 'x)'); } else if (b.roas != null && b.roas < 3) { p += 10; why.push('su retorno por $1 es moderado (' + b.roas.toFixed(1).replace('.', ',') + 'x)'); }
+  if (b.invGrowth != null && b.invGrowth <= -0.30) { p += 25; why.push('su inversión bajó ' + Math.round(-b.invGrowth * 100) + '%'); }
+  p = Math.min(100, p);
+  return { score: p, level: p >= 60 ? 'Alto' : p >= 30 ? 'Medio' : 'Bajo', why: why.length ? why : ['sin señales de alerta en los datos'] };
+}
+function oppOf(b, res) {
+  let p = 0; const why = [];
+  const unprom = b.nProducts ? 1 - b.promoted / b.nProducts : 0;
+  if (unprom >= 0.3) { p += Math.round(unprom * 30); why.push(Math.round(unprom * 100) + '% de sus productos nunca ha tenido promoción'); }
+  if (b.trend != null && b.trend >= 0.05) { p += 25; why.push('sus ventas normales crecen ' + Math.round(b.trend * 100) + '%'); }
+  if (res.planning.idx >= 1.05) { p += 20; why.push('el próximo mes suele ser de alta demanda'); }
+  if (b.avgUp != null && b.avgUp >= 0.30) { p += 25; why.push('sus promociones suben las ventas ' + Math.round(b.avgUp * 100) + '% en promedio'); }
+  p = Math.min(100, p);
+  return { score: p, level: p >= 60 ? 'Alta' : p >= 30 ? 'Media' : 'Baja', why: why.length ? why : ['sin señales claras de crecimiento en los datos'] };
+}
+
+/* ===== Acciones sugeridas al KAM para una marca ===== */
+const MESN = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const pf = (x) => x == null ? '–' : (x >= 0 ? '+' : '') + Math.round(x * 100) + '%';
+const perL = (p) => MESN[+p.slice(5) - 1] + ' ' + p.slice(0, 4);
+
+function actionsFor(res, brand, tier) {
+  const A = [], prods = res.products.filter(p => p.brand === brand.name), uN = res.useNNS ? 'ventas netas' : 'unidades';
+  const sugg = (p) => p.band.top.key + (p.tipo ? ' · ' + p.tipo.top.key : '') + (p.dur ? ' · ' + p.dur.top.key : '');
+  // 1. productos en caída sin promoción reciente
+  const fall = prods.filter(p => p.trend != null && p.trend <= -0.10 && !p.promoRecent).sort((a, b) => a.trend - b.trend);
+  if (fall.length) A.push({ kind: 'caida', prio: fall.length >= 3 ? 1 : 2, title: `Reactivar ${fall.length} producto${fall.length > 1 ? 's' : ''} en caída`,
+    why: 'Sus ventas normales (sin promoción) bajaron en los últimos 3 meses y no tienen promoción reciente.',
+    how: 'Programa una promoción con la sugerencia de cada producto. Recuerda reservar el espacio con 15 días de anticipación.',
+    items: fall.slice(0, 6).map(p => `${p.desc}: ${pf(p.trend)} · sugerencia ${sugg(p)} (alza esperada ${pf(p.band.top.score)}, confianza ${p.conf.toLowerCase()})`) });
+  // 2. descuentos que no se pagaron solos
+  const bad = [...brand.obs].filter(o => o.up < 0).sort((a, b) => a.up - b.up);
+  if (bad.length) A.push({ kind: 'bajo', prio: bad.length >= 2 ? 1 : 2, title: bad.length > 1 ? 'Descuentos que no se pagaron solos' : 'Un descuento que no se pagó solo',
+    why: res.useNNS ? 'En estos casos el descuento no compensó: las ventas netas quedaron bajo lo esperable sin promoción.' : 'En estos casos la promoción no logró subir las ventas.',
+    how: 'La próxima vez usa un tramo menor o combínalo con un anuncio sin descuento.',
+    items: bad.slice(0, 5).map(o => { const p = prods.find(x => x.cod === o.cod); return `${(p && p.desc) || o.cod}: ${Math.round(o.pct)}% en ${perL(o.per)} → unidades ${pf(o.upU)}, ${uN} ${pf(o.up)} vs. lo esperado`; }) });
+  // 3. temporada
+  const idx = res.planning.idx, mes = MESN[res.planning.month - 1];
+  if (idx >= 1.05) A.push({ kind: 'temporada', prio: 1, title: `Se viene ${mes}: demanda más alta de lo normal`, why: `Históricamente ${mes} vende ${pf(idx - 1)} sobre un mes promedio.`,
+    how: 'Reserva espacio publicitario ahora (15 días de anticipación y aprobación del Country Manager) y prioriza los productos de mayor volumen.', items: [] });
+  else if (idx <= 0.95) A.push({ kind: 'temporada', prio: 3, title: `${mes[0].toUpperCase() + mes.slice(1)} suele ser un mes más flojo`, why: `Históricamente ${mes} vende ${pf(idx - 1)} bajo un mes promedio.`,
+    how: 'Buen momento para promociones que activen la demanda de los productos en caída.', items: [] });
+  // 4. dependencia de promociones
+  if (brand.promoShare >= 0.5) A.push({ kind: 'dep', prio: 2, title: 'La marca depende mucho de las promociones', why: `${Math.round(brand.promoShare * 100)}% de sus ventas ocurre en meses con promoción.`,
+    how: 'Alterna promociones con anuncios sin descuento (banner o video) para sostener la demanda sin regalar margen.', items: [] });
+  // 5. productos que ya crecen
+  const up = prods.filter(p => p.trend != null && p.trend >= 0.10 && !p.promoRecent).sort((a, b) => b.baseU - a.baseU).slice(0, 3);
+  if (up.length) A.push({ kind: 'crece', prio: 3, title: 'Cuida el margen en productos que ya crecen', why: 'Suben sin necesitar promoción reciente.',
+    how: 'No los descuentes. Si quieres empujarlos, usa un anuncio sin descuento.', items: up.map(p => `${p.desc}: ${pf(p.trend)} en ventas normales`) });
+  // 6. servicio publicitario según tipo de cliente
+  const bt = res.global.tipo.filter(g => g.n >= 3).sort((a, b) => b.up - a.up)[0];
+  const dataLine = bt ? `En los datos, el anuncio con mayor alza promedio fue “${bt.key}” (${pf(bt.up)}).` : null;
+  let sv;
+  if (tier === 3) sv = { t: 'Autoservicio guiado por Ada', d: 'Banner simple más una promoción en el tramo sugerido. Evita formatos con requisitos exigentes.' };
+  else if (tier === 2) sv = { t: 'Banner + video corto', d: 'Video de hasta 15 s y 10 MB, y revisión mensual de resultados con el cliente.' };
+  else if (tier === 1) { const n = brand.nProducts; sv = { t: n >= 20 ? 'Dynamic Landing + dashboard' : 'Video + dashboard (Dynamic Landing aún no aplica)', d: `Dynamic Landing exige mínimo 20 productos con 20% de descuento: la marca tiene ${n} productos en tus archivos. Ofrece dashboard y estudios, que tienen 2 a 5 semanas de espera: pídelos con tiempo.` }; }
+  else sv = { t: 'Define el tipo de cliente', d: 'Con menos de 3 marcas en tus archivos Ada no puede clasificarlas. Elige el tipo arriba para recibir el servicio sugerido.' };
+  A.push({ kind: 'servicio', prio: 2, title: 'Servicio publicitario sugerido: ' + sv.t, why: tier ? `Cliente ${tier === 1 ? 'tier 1' : tier === 2 ? 'tier 2' : 'longtail'}.` : '', how: sv.d + (dataLine ? ' ' + dataLine : ''), items: [] });
+  // 7. datos insuficientes
+  const noHist = brand.nProducts - prods.length;
+  if (noHist > 0) A.push({ kind: 'datos', prio: 3, title: `${noHist} producto${noHist > 1 ? 's' : ''} sin historial suficiente`, why: 'Necesitan al menos 2 meses sin promoción para poder comparar.', how: 'Ada no recomienda sobre ellos hasta tener más datos.', items: [] });
+  return A.sort((a, b) => a.prio - b.prio);
+}
+
+/* ===== Datos de ejemplo FICTICIOS con la misma estructura que los Excel descritos ===== */
+function mulberry(seed) { let s = seed >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+function makeSample() {
+  const r = mulberry(20261111);
+  const gauss = () => { let u = 0, v = 0; while (!u) u = r(); while (!v) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  const periods = []; for (let i = 0; i < 12; i++) { const y = 2025 + Math.floor((10 + i) / 12), m = ((10 + i) % 12) + 1; periods.push({ y, m, p: ym(y, m) }); }
+  const seasT = { 1: .92, 2: .88, 3: 1, 4: 1, 5: 1, 6: .97, 7: 1.05, 8: 1, 9: 1.02, 10: 1.05, 11: 1.1, 12: 1.22 };
+  const mn = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const kinds = [
+    ['Alimento perro adulto', 'kg', [3, 8, 15]], ['Alimento perro cachorro', 'kg', [3, 8]], ['Alimento gato adulto', 'kg', [1.5, 3, 7.5]],
+    ['Snack dental perro', 'g', [180, 350]], ['Alimento húmedo gato', 'g', [85, 340]], ['Arena sanitaria', 'kg', [4, 10]], ['Alimento perro raza pequeña', 'kg', [1, 3]]
+  ];
+  const brandDef = [['Marca Andes', 1.0, 7], ['Marca Pampa', 0.6, 5], ['Marca Sur', 0.3, 4], ['Marca Nube', 0.15, 3], ['Marca Alba', 0.08, 3]];
+  const roasT = { 'Marca Andes': 4.2, 'Marca Pampa': 3.4, 'Marca Sur': 2.8, 'Marca Nube': 1.8, 'Marca Alba': 5.0 };
+  const flat = []; kinds.forEach(([name, unit, sizes]) => sizes.forEach(sz => flat.push([name, unit, sz])));
+  const prods = []; let fi = 0;
+  brandDef.forEach(([bn, scale, n]) => { for (let j = 0; j < n; j++, fi++) {
+    const [name, unit, sz] = flat[fi % flat.length], i = prods.length;
+    prods.push({
+      marca: bn, cod: 'RP-' + (10000 + i * 7), codMarca: 'MD-' + (4000 + i * 3), ean: '78' + String(Math.floor(r() * 1e11)).padStart(11, '0'), dun: '178' + String(Math.floor(r() * 1e11)).padStart(11, '0'),
+      desc: `${name} ${sz} ${unit}`, unit, sz, price: Math.round((5000 + sz * (unit === 'g' ? 30 : 4200) * (0.7 + r() * 0.6)) / 10) * 10,
+      base: Math.max(20, Math.round((120 + r() * 1100) * scale)), e: 0.6 + r() * 0.9, drift: -0.07 + r() * 0.11
+    });
+  } });
+  const tipos = ['Banner', 'Dynamic Landing', 'Video', 'Sin anuncio'], tipoB = { 'Banner': .05, 'Dynamic Landing': .15, 'Video': .10, 'Sin anuncio': 0 };
+  const durs = [7, 14, 30], durB = { 7: 0, 14: .06, 30: -.02 }, discs = [10, 15, 20, 25, 30, 40];
+  const promo = [], ventas = [];
+  for (const pr of prods) {
+    const nP = 3 + Math.floor(r() * 3), pm = new Set();
+    const noRecent = r() < 0.35; while (pm.size < nP) pm.add(Math.floor(r() * (noRecent ? 9 : 12)));
+    periods.forEach((pe, idx) => {
+      const sf = seasT[pe.m] * Math.pow(1 + pr.drift, idx), noise = Math.exp(0.07 * gauss());
+      let units, disc = 0;
+      if (pm.has(idx)) {
+        disc = discs[Math.floor(r() * discs.length)];
+        const tipo = tipos[Math.floor(r() * tipos.length)], dur = durs[Math.floor(r() * durs.length)];
+        const up = pr.e * 0.9 * (1 - Math.exp(-disc / 18)) + tipoB[tipo] + durB[dur];
+        units = Math.round(pr.base * sf * (1 + up) * noise);
+        const share = 0.5 + r() * 0.2;
+        promo.push({
+          'Marca': pr.marca, 'Código producto Rappi': pr.cod, 'Código producto marca': pr.codMarca, 'EAN': pr.ean, 'DUN': pr.dun, 'Descripción de catálogo': pr.desc,
+          'Formato (g/kg)': pr.unit, 'Costo del producto': Math.round(pr.price * 0.6), 'Precio de venta': pr.price, 'Precio fleje': pr.price,
+          'Precio fleje promoción': Math.round(pr.price * (1 - disc / 100)), '% de descuento': disc / 100, 'Mes de activación': mn[pe.m - 1] + ' ' + pe.y,
+          '% de descuento que nosotros vamos a pagar': Math.round(disc * share) / 100, '% de descuento que ellos como empresa pagan': Math.round(disc * (1 - share)) / 100,
+          'Tipo de anuncio': tipo, 'Duración (días)': dur
+        });
+      } else units = Math.round(pr.base * sf * noise);
+      ventas.push({
+        'Marca': pr.marca, 'Periodo': pe.p, 'Item': pr.cod, 'Código producto marca': pr.codMarca, 'Formato de venta': pr.sz + ' ' + pr.unit,
+        'Cantidad': units, 'Kilos vendidos': pr.unit === 'kg' ? Math.round(units * pr.sz) : Math.round(units * pr.sz / 1000),
+        'NNS': Math.round(units * pr.price * (1 - disc / 100) * 0.9),
+        'Inversión Rappi Ads': disc ? Math.round(units * pr.price * (1 - disc / 100) * 0.9 / (roasT[pr.marca] * (0.85 + 0.3 * r()))) : 0
+      });
+    });
+  }
+  return { promo, ventas };
+}
+
+/* ===== Ada para KAM · v5 ===== */
+(function () {
+const $ = (id) => document.getElementById('ak-' + id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const P = (x) => x == null ? '–' : (x >= 0 ? '+' : '') + Math.round(x * 100) + '%';
+const cls = (x) => (x == null || Math.abs(x) < 0.005) ? '' : x > 0 ? 'up' : 'down';
+const MN = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+const MESL = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const perLabel = (p) => p ? MN[+p.slice(5) - 1] + ' ' + p.slice(0, 4) : '–';
+const fdate = (ms) => ms ? new Date(ms).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+const slug = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'cliente';
+const num = (x, d) => x == null ? '–' : x.toFixed(d == null ? 1 : d).replace('.', ',');
+const TIERS = { 1: 'Tier 1', 2: 'Tier 2', 3: 'Longtail' };
+const TIERS_L = { 1: 'Tier 1 (grande)', 2: 'Tier 2 (mediano)', 3: 'Longtail (pequeño)' };
+const OBJ_TIPOS = ['Volumen de ventas', 'Satisfacción del cliente', 'Nuevos clientes captados', 'Clientes reactivados', 'Otro'];
+const OBJ_META = { 'Volumen de ventas': ['Meta de crecimiento de ventas (%)', 'Ej.: 15'], 'Satisfacción del cliente': ['Meta de satisfacción (nota de 1 a 5)', 'Ej.: 4,5'], 'Nuevos clientes captados': ['Meta de nuevos clientes (cantidad)', 'Ej.: 3'], 'Clientes reactivados': ['Meta de clientes reactivados (cantidad)', 'Ej.: 2'], 'Otro': ['Meta (describe la unidad en tus notas)', 'Ej.: 10'] };
+const STEPS = [
+  { n: 1, t: 'Diagnóstico interno', d: 'Sube la data y revisa cómo viene el cliente' },
+  { n: 2, t: 'Benchmark', d: 'Compáralo con tus otros clientes' },
+  { n: 3, t: 'Enviar invitación', d: 'Invítalo al Rappi Club' },
+  { n: 4, t: 'Análisis de data interna', d: 'Objetivos, viabilidad y fuentes' },
+  { n: 5, t: 'Ficha de cliente', d: 'Resumen, objetivo y campaña' },
+  { n: 6, t: 'Ficha del caso', d: 'Metodología, equipo y brief' }
+];
+const METODOS = [
+  { k: 'colab', t: 'Colaboración entre makers', d: 'Marcas con afinidad comercial exploran ocasiones de consumo conjuntas, cuidando la privacidad de sus presupuestos.' },
+  { k: 'exper', t: 'Modalidad de experimentación', d: 'Maker y equipo desarrollan dos alternativas de mensaje para compararlas y definir una hipótesis de prueba en una campaña real.' },
+  { k: 'lab', t: 'Laboratorio de Adaptación Estratégica', d: 'Se adaptan al ecosistema de Rappi las piezas y lineamientos que el cliente trae de su marca o agencia.' }
+];
+const METODO_TIER = { 1: ['colab', 'Los clientes grandes tienen presupuesto y marcas afines con quienes co-crear.'], 2: ['exper', 'Los clientes medianos ganan más probando alternativas y midiendo cuál funciona.'], 3: ['lab', 'Los clientes pequeños suelen necesitar apoyo para adaptar sus piezas y partir con poco.'] };
+const ROLES = [['kam', 'KAM'], ['guia', 'Guía'], ['inhouse', 'In-house'], ['externos', 'Participantes externos'], ['actuario', 'Actuario (quien toma nota)']];
+const STD = {
+  promo: [['Marca', true], ['Código producto Rappi', true], ['Código producto marca', false], ['EAN', false], ['Descripción de catálogo', false], ['Mes de activación', true], ['% de descuento', true], ['% de descuento que paga la marca', false], ['% de descuento que paga Rappi', false], ['Tipo de anuncio', false], ['Duración (días)', false]],
+  ventas: [['Marca', true], ['Periodo', true], ['Item', true], ['Cantidad', true], ['Kilos vendidos', false], ['NNS', false], ['Inversión Rappi Ads', false]]
+};
+const DEF_W = { ventas: 35, tendencia: 20, roas: 15, antig: 15, alin: 15 };
+const DEF_CFG = { sesion: 75, colab: 25, exper: 25, lab: 25, formula: '', formulaNota: '' };
+const state = { promo: null, ventas: null, map: { promo: {}, ventas: {} }, res: null, clients: {}, log: [], sd: {}, view: 'clientes', cid: null, tab: 'antes', step: 1, mode: 'init', err: '', uid: 'local', names: {},
+  newName: '', pending: false, drawer: false, dfilter: 'all', unseen: 0, onlyMine: true, loaded: false, upErr: '' };
+let charts = [];
+Chart.defaults.font.family = 'Poppins, system-ui, sans-serif'; Chart.defaults.color = '#6b6b6b';
+const CORAL = '#ff4521', SALMON = '#ffb09f';
+const money = (n, u) => { if (n == null) return '–'; const a = Math.abs(n), f = (x) => x.toFixed(1).replace('.', ','); const s = a >= 1e9 ? f(n / 1e9) + ' mil M' : a >= 1e6 ? f(n / 1e6) + 'M' : Math.round(n).toLocaleString('es-CL'); return u === false ? s + ' un.' : '$' + s; };
+const who = (uid) => uid === state.uid ? (state.mode === 'local' ? 'Tú' : (state.names[uid] || 'Tú')) : (state.names[uid] || 'Alguien del equipo');
+const weights = () => Object.assign({}, DEF_W, (state.sd.benchmark || {}).weights);
+const cfg = () => Object.assign({}, DEF_CFG, state.sd.config || {});
+const teams = () => (state.sd.teams && state.sd.teams.list) || [];
+const userCfg = () => state.sd['user_' + state.uid] || {};
+const learnings = () => state.res ? { band: state.res.global.band, tipo: state.res.global.tipo, dur: state.res.global.dur } : (state.sd.learnings || null);
+const metodoMin = (k) => cfg()[k];
+
+/* ---------- almacenamiento: equipo (db) o local ---------- */
+const store = (function () {
+  let db = null, user = null; const LS = 'ada-kam-v3'; const COLL = { clients: 'kam_clients', log: 'kam_log', settings: 'kam_settings' };
+  const lsGet = () => { try { return JSON.parse(localStorage.getItem(LS)) || {}; } catch (e) { return {}; } };
+  const lsSet = (o) => { try { localStorage.setItem(LS, JSON.stringify(o)); } catch (e) { } };
+  const rows = (snap) => {
+    if (!snap) return [];
+    const one = (d) => ({ id: d.id, ...(typeof d.data === 'function' ? d.data() : d) });
+    if (Array.isArray(snap)) return snap.map(one);
+    if (snap.docs) return snap.docs.map(one);
+    const out = []; if (typeof snap.forEach === 'function') snap.forEach(d => out.push(one(d))); return out;
+  };
+  const stable = (o) => JSON.stringify(o, (k, v) => (v && typeof v === 'object' && !Array.isArray(v)) ? Object.keys(v).sort().reduce((a, x) => { a[x] = v[x]; return a; }, {}) : v);
+  const fail = (e) => { state.err = 'No se pudo guardar o leer del equipo (' + ((e && (e.code || e.message)) || 'error') + '). Tus cambios siguen en esta pantalla.'; render(); };
+  const seen = new Set(); let logReady = false;
+  function onNewLog(list) {
+    const fresh = list.filter(l => !seen.has(l.id)); fresh.forEach(l => seen.add(l.id));
+    if (!logReady) { logReady = true; return; }
+    fresh.filter(l => l.uid !== state.uid).forEach(l => { state.unseen++; toast(l); });
+  }
+  async function init() {
+    try { db = await claude.use('db'); user = await claude.use('user'); } catch (e) { db = null; }
+    if (user) { try { state.uid = String(await user.id()); } catch (e) { } }
+    if (!db) { const o = lsGet(); state.mode = 'local'; state.clients = o.clients || {}; state.log = o.log || []; state.sd = o.sd || {}; render(); return; }
+    state.mode = 'shared';
+    const timer = setTimeout(() => { if (!state.loaded) { state.err = 'El equipo tarda en responder. Si no carga, revisa tu conexión.'; render(); } }, 10000);
+    const snap = () => stable([state.clients, state.log, state.sd]);
+    const sub = (coll, cb) => { try { db.collection(coll).onSnapshot(s => { const first = !state.loaded; state.loaded = true; clearTimeout(timer); const wasErr = state.err.startsWith('El equipo'); if (wasErr) state.err = ''; const before = snap(); cb(rows(s)); if (first || wasErr || snap() !== before) softRender(); resolveNames(); }, fail); } catch (e) { fail(e); } };
+    sub(COLL.clients, (r) => { state.clients = {}; r.forEach(x => { state.clients[x.id] = x; }); });
+    sub(COLL.log, (r) => { state.log = r.sort((a, b) => (b.at || 0) - (a.at || 0)).slice(0, 400); onNewLog(state.log); });
+    sub(COLL.settings, (r) => { r.forEach(x => { state.sd[x.id] = x; }); });
+    render();
+  }
+  async function resolveNames() {
+    if (!user || typeof user.profiles !== 'function') return;
+    const ids = [...new Set([state.uid, ...state.log.map(l => l.uid), ...Object.values(state.clients).flatMap(c => [c.inv && c.inv.sentBy, c.caso && c.caso.aprobado && c.caso.aprobado.by, c.diag && c.diag.by, c.meta && c.meta.owner])].filter(Boolean))];
+    try { const ps = await user.profiles(ids); let ch = false; ids.forEach(i => { const n = ps && ps[i] && ps[i].name; if (n && state.names[i] !== n) { state.names[i] = n; ch = true; } }); if (ch) { const w = $('who'); if (w && state.names[state.uid]) w.textContent = 'Hola, ' + state.names[state.uid].split(' ')[0]; softRender(); } } catch (e) { }
+  }
+  async function put(coll, id, patch, full, isNew) {
+    if (state.mode === 'local') { lsSet({ clients: state.clients, log: state.log, sd: state.sd }); return; }
+    try { const ref = db.collection(coll).doc(id); if (!isNew) { try { await ref.update(patch); return; } catch (e) { } } await ref.set(full || patch); } catch (e) { fail(e); }
+  }
+  return {
+    init, COLL,
+    saveClient(id, patch) { state.clients[id] = Object.assign({ id }, state.clients[id], patch); const full = Object.assign({}, state.clients[id]); delete full.id; return put(COLL.clients, id, patch, full); },
+    addLog(cid, text) { const e = { id: 'l' + Date.now() + Math.floor(Math.random() * 1000), cid, uid: state.uid, at: Date.now(), text }; state.log.unshift(e); seen.add(e.id); const d = { cid, uid: e.uid, at: e.at, text }; return put(COLL.log, e.id, d, d, true); },
+    saveSetting(id, val) { state.sd[id] = Object.assign({}, val, { id }); return put(COLL.settings, id, val); },
+    async removeClient(id) { delete state.clients[id]; if (state.mode === 'local') return put(COLL.clients, id, {}); try { await db.collection(COLL.clients).doc(id).delete(); } catch (e) { fail(e); } }
+  };
+})();
+
+/* ---------- datos del cliente ---------- */
+const C = (id) => state.clients[id] || {};
+const sec = (c, k) => (c && c[k]) || {};
+function liveBrand(name) { return state.res ? state.res.brands.find(b => b.name === name) : null; }
+function snapshotFor(b) {
+  const r = state.res, prods = r.products.filter(p => p.brand === b.name), risk = riskOf(b), opp = oppOf(b, r);
+  const l3 = b.series.slice(-3).reduce((s, x) => s + x.v, 0), A = actionsFor(r, b, b.tier);
+  return {
+    at: Date.now(), by: state.uid, useNNS: r.useNNS, series: b.series.map(x => ({ per: x.per, v: Math.round(x.v), promos: x.promos, inv: Math.round(x.inv) })), l3: Math.round(l3), trend: b.trend, promoShare: b.promoShare, avgUp: b.avgUp,
+    roas: b.roas, invGrowth: b.invGrowth, salesGrowth: b.salesGrowth, invShare: b.invShare, hasInv: b.hasInv, nProducts: b.nProducts, promoted: b.promoted, nPromoMonths: b.nPromoMonths, promoLast3: b.promoLast3,
+    risk, opp, tierAuto: b.tier, planIdx: r.planning.idx, planMonth: r.planning.month,
+    falling: prods.filter(p => p.trend != null && p.trend <= -0.10).slice(0, 8).map(p => ({ d: p.desc, t: p.trend, s: p.band.top.score, b: p.band.top.key, promo: p.promoRecent })),
+    rising: prods.filter(p => p.trend != null && p.trend >= 0.10).slice(0, 8).map(p => ({ d: p.desc, t: p.trend })),
+    actions: A.map(a => ({ kind: a.kind, prio: a.prio, title: a.title, why: a.why, how: a.how, items: a.items }))
+  };
+}
+function diagOf(c) { const lb = liveBrand(c.meta && c.meta.name); return lb ? Object.assign(snapshotFor(lb), { live: true, savedAt: c.diag && c.diag.at }) : (c.diag ? Object.assign({}, c.diag, { live: false }) : null); }
+const tierOf = (c) => (c.meta && c.meta.tier > 0) ? c.meta.tier : ((c.diag && c.diag.tierAuto) || null);
+const metodoSug = (c) => { const t = tierOf(c); return t ? { k: METODO_TIER[t][0], why: METODO_TIER[t][1], t } : null; };
+const metodoEff = (c) => { const f = sec(c, 'fic'); return (f.metManual && f.metodologia) ? f.metodologia : ((metodoSug(c) || {}).k || ''); };
+const unlocked = (c) => sec(c, 'inv').estado === 'aceptada';
+function stepsDone(c) { const s = sec(c, 'steps'); return [1, 2, 3, 4, 5, 6].filter(n => s['s' + n]).length; }
+const ALIN = { Alta: 100, Media: 50, Baja: 0 };
+function benchRows() {
+  const w = weights(), out = {};
+  Object.values(state.clients).forEach(c => { const d = diagOf(c) || c.diag; if (c.meta) out[c.meta.name] = { id: c.id, name: c.meta.name, tier: tierOf(c), since: c.meta.since, alin: sec(c, 'dat').alineacion || '', d, saved: true }; });
+  if (state.res) state.res.brands.forEach(b => { if (!out[b.name]) out[b.name] = { id: null, name: b.name, tier: b.tier, since: null, alin: '', d: snapshotFor(b), saved: false }; });
+  const rows = Object.values(out).filter(r => r.d);
+  const pct = (arr, v) => arr.length < 2 ? 50 : 100 * arr.filter(x => x < v).length / (arr.length - 1);
+  const lv = rows.map(r => r.d.l3), rv = rows.map(r => r.d.roas).filter(x => x != null);
+  rows.forEach(r => {
+    const comp = { ventas: pct(lv, r.d.l3), tendencia: r.d.trend == null ? null : Math.max(0, Math.min(100, (r.d.trend + 0.2) / 0.4 * 100)), roas: r.d.roas == null ? null : pct(rv, r.d.roas), antig: (r.since == null || r.since === '') ? null : Math.min(5, +r.since) / 5 * 100, alin: ALIN[r.alin] == null ? null : ALIN[r.alin] };
+    let sw = 0, ss = 0; for (const k of Object.keys(comp)) if (comp[k] != null && w[k] > 0) { sw += w[k]; ss += w[k] * comp[k]; }
+    r.score = sw ? Math.round(ss / sw) : null; r.comp = comp;
+  });
+  return rows.sort((a, b) => (b.score || 0) - (a.score || 0));
+}
+
+/* ---------- archivos ---------- */
+function parseSheet(ws) {
+  const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null, raw: true });
+  const h = rows.findIndex(r => r.filter(v => typeof v === 'string' && v.trim()).length >= 3);
+  if (h < 0) throw new Error('No encontré una fila de encabezados con al menos 3 columnas de texto.');
+  const seen = {};
+  const headers = rows[h].map((v, i) => { let n = (v == null || String(v).trim() === '') ? 'Columna ' + (i + 1) : String(v).trim(); if (seen[n]) { seen[n]++; n += ' (' + seen[n] + ')'; } else seen[n] = 1; return n; });
+  const out = [];
+  for (const r of rows.slice(h + 1)) { if (!r.some(v => v != null && v !== '')) continue; const o = {}; headers.forEach((k, i) => { o[k] = r[i] === undefined ? null : r[i]; }); out.push(o); }
+  return { headers, rows: out };
+}
+async function readFiles(files) {
+  state.upErr = '';
+  for (const f of files) {
+    try {
+      const wb = XLSX.read(await f.arrayBuffer(), { type: 'array' });
+      if (wb.SheetNames.length >= 2) { // plantilla estándar: hoja Promociones + hoja Ventas
+        const pn = wb.SheetNames.find(n => /promo/i.test(n)), vn = wb.SheetNames.find(n => /venta/i.test(n));
+        if (pn && vn) { setTable('promo', parseSheet(wb.Sheets[pn]), f.name + ' · hoja ' + pn); setTable('ventas', parseSheet(wb.Sheets[vn]), f.name + ' · hoja ' + vn); continue; }
+      }
+      classify(parseSheet(wb.Sheets[wb.SheetNames[0]]), f.name);
+    } catch (e) { state.upErr += 'No pude leer “' + f.name + '”: ' + e.message + ' '; }
+  }
+  render();
+}
+function classify(t, label) {
+  const mp = detectMapping('promo', t.headers), mv = detectMapping('ventas', t.headers);
+  const kind = (mp.pct && mp.mes && mp.codigo) ? 'promo' : (mv.cant && mv.periodo && mv.codigo) ? 'ventas' : (!state.promo ? 'promo' : 'ventas');
+  setTable(kind, t, label);
+}
+function setTable(kind, t, label) { state[kind] = Object.assign(t, { label }); state.map[kind] = detectMapping(kind, t.headers); }
+const upReady = () => { const ok = (k) => state[k] && FIELDS[k].filter(f => f.req).every(f => state.map[k][f.k]); return ok('promo') && ok('ventas'); };
+function useSample() { const s = makeSample(), mk = (rows, l) => ({ headers: Object.keys(rows[0]), rows, label: l }); state.sampleData = true; setTable('promo', mk(s.promo, 'ejemplo ficticio'), 'ejemplo ficticio'); setTable('ventas', mk(s.ventas, 'ejemplo ficticio'), 'ejemplo ficticio'); run(); }
+function run() {
+  state.upErr = '';
+  try { state.res = analyze(state.promo.rows, state.ventas.rows, state.map.promo, state.map.ventas); state.view = 'anadir'; }
+  catch (e) { state.upErr = e.message; }
+  render();
+}
+function stdTemplate() {
+  const wb = XLSX.utils.book_new();
+  const ex = { promo: ['Marca ejemplo', 'RP-10001', 'MD-4001', '7800000000001', 'Alimento perro adulto 3 kg', '2026-12', '20%', '12%', '8%', 'Dynamic Landing', 14], ventas: ['Marca ejemplo', '2026-11', 'RP-10001', 320, 960, 5400000, 780000] };
+  [['Promociones', 'promo'], ['Ventas', 'ventas']].forEach(([n, k]) => { const ws = XLSX.utils.aoa_to_sheet([STD[k].map(c => c[0]), ex[k]]); ws['!cols'] = STD[k].map(c => ({ wch: Math.max(14, c[0].length + 2) })); XLSX.utils.book_append_sheet(wb, ws, n); });
+  return new Blob([XLSX.write(wb, { type: 'array', bookType: 'xlsx' })], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+}
+
+/* ---------- reglas de apoyo ---------- */
+const cname = (id) => (C(id).meta && C(id).meta.name) || id;
+function objetivoSugerido(c, d) {
+  if (!d) return '';
+  const parts = [], fall = d.falling || [];
+  if (fall.length) { const avg = fall.reduce((s, x) => s + x.s, 0) / fall.length; parts.push(`reactivar ${fall.length} producto${fall.length > 1 ? 's' : ''} en caída con su descuento sugerido (alza esperada promedio ${P(avg)})`); }
+  if (d.planIdx >= 1.05) parts.push(`aprovechar ${MESL[d.planMonth - 1]}, un mes de demanda alta`);
+  if (d.risk.level !== 'Bajo') parts.push('recuperar la frecuencia de campañas para bajar el riesgo de abandono');
+  if (d.roas != null && d.roas < 3) parts.push('mejorar el retorno por cada $1 invertido');
+  if (!parts.length) parts.push('mantener el nivel actual y probar un anuncio sin descuento en los productos que ya crecen');
+  return `Para ${c.meta.name}: ${parts.join('; ')}.`;
+}
+function signals(d) {
+  if (!d) return [];
+  const s = [`Tendencia ${P(d.trend)}`, `Riesgo ${d.risk.level.toLowerCase()}`, `Oportunidad ${d.opp.level.toLowerCase()}`];
+  if (d.roas != null) s.push(`Retorno ${num(d.roas)}x`);
+  s.push(`${(d.falling || []).length} productos en caída`, `Promos con alza promedio ${P(d.avgUp)}`);
+  return s;
+}
+function summaryText(c, d) {
+  if (!d) return 'Aún no hay diagnóstico para este cliente.';
+  return `${c.meta.name} vendió ${money(d.l3, d.useNNS)} en los últimos 3 meses, con una tendencia de ventas normales de ${P(d.trend)}. ` +
+    (d.roas != null ? `Cada $1 invertido en Rappi Ads retornó $${num(d.roas)}. ` : '') +
+    `Riesgo de abandono ${d.risk.level.toLowerCase()} (${d.risk.why.join('; ')}). Oportunidad de crecimiento ${d.opp.level.toLowerCase()} (${d.opp.why.join('; ')}).`;
+}
+function verdict(c, d) {
+  const dat = sec(c, 'dat'), meta = +dat.meta, plazo = +dat.plazo, tp = dat.objTipo || 'Volumen de ventas';
+  if (!meta || !plazo) return '<div class="note">Escribe la meta y el plazo para ver si es viable con lo que muestran los datos.</div>';
+  if (tp !== 'Volumen de ventas') return `<div class="verdict v-mid">Esta meta (${esc(tp.toLowerCase())}) no se puede contrastar con la data de ventas. Ada la guarda como línea base y la sigue en <b>KPIs y metas cumplidas</b>.</div>`;
+  const need = Math.pow(1 + meta / 100, 1 / plazo) - 1, have = (d && d.trend != null) ? Math.pow(1 + d.trend, 1 / 3) - 1 : 0, gap = need - have;
+  const k = gap <= 0.01 ? 'v-ok' : gap <= 0.03 ? 'v-mid' : 'v-bad', tt = gap <= 0.01 ? 'Viable' : gap <= 0.03 ? 'Exigente, pero posible con campañas' : 'Poco realista con lo que muestran los datos';
+  return `<div class="verdict ${k}"><b>${tt}.</b> Para llegar a +${meta}% en ${plazo} mes${plazo > 1 ? 'es' : ''} se necesita crecer ${num(need * 100)}% por mes; hoy las ventas normales ${have >= 0 ? 'crecen' : 'caen'} ${num(Math.abs(have) * 100)}% por mes. <span class="note">Regla simple de referencia, no una proyección.</span></div>`;
+}
+
+/* ---------- piezas de formulario ---------- */
+const dc = (k, big, p, est, cl) => `<div class="dc"><div class="k"><span>${k}</span>${est ? '<span class="est">Estimación</span>' : ''}</div><b class="${cl || ''}">${big}</b><p>${p}</p></div>`;
+const val = (c, s, k) => { const v = sec(c, s)[k]; return v == null ? '' : v; };
+const inp = (c, s, k, type, ph) => `<input type="${type || 'text'}" data-f="${s}.${k}" value="${esc(val(c, s, k))}" placeholder="${esc(ph || '')}"${type === 'number' ? ' step="any"' : ''}>`;
+const txa = (c, s, k, ph) => `<textarea data-f="${s}.${k}" placeholder="${esc(ph || '')}">${esc(val(c, s, k))}</textarea>`;
+const sel = (c, s, k, opts) => `<select data-f="${s}.${k}">${opts.map(o => { const [v, l] = Array.isArray(o) ? o : [o, o]; return `<option value="${esc(v)}"${String(val(c, s, k)) === String(v) ? ' selected' : ''}>${esc(l)}</option>`; }).join('')}</select>`;
+const chk = (c, s, k, label) => `<label class="chk"><input type="checkbox" data-f="${s}.${k}"${val(c, s, k) ? ' checked' : ''}><span>${label}</span></label>`;
+const actCard = (a) => `<div class="act k-${a.kind} ap${a.prio}"><span class="tag p${a.prio}">${a.prio === 1 ? 'Prioridad alta' : a.prio === 2 ? 'Prioridad media' : 'Para tener en cuenta'}</span><h3>${esc(a.title)}</h3>${a.why ? `<p><span class="lbl">Por qué</span> ${esc(a.why)}</p>` : ''}<p><span class="lbl">Qué hacer</span> ${esc(a.how)}</p>${(a.items || []).length ? '<ul>' + a.items.map(i => `<li>${esc(i)}</li>`).join('') + '</ul>' : ''}</div>`;
+const decKey = (a) => slug(a.kind + '-' + a.title).slice(0, 48);
+const DEC_L = { aceptada: 'Acepto la sugerencia de Ada', cambiada: 'La cambio: haré otra cosa', descartada: 'La descarto' };
+function decBlock(c, a) {
+  const k = decKey(a), dd = (sec(c, 'dec')[k]) || {}, b = (v, l) => `<button class="${dd.est === v ? 'on' : ''}" data-act="dec" data-k="${k}" data-v="${v}">${l}</button>`;
+  let h = `<div class="dec">${b('aceptada', 'Aceptar')}${b('cambiada', 'Cambiar')}${b('descartada', 'Descartar')}${dd.est ? `<span class="note">${DEC_L[dd.est]} · ${esc(who(dd.by))}</span>` : '<span class="note">Sin decidir</span>'}</div>`;
+  if (dd.est === 'cambiada' || dd.est === 'descartada') h += `<textarea data-dk="${k}" placeholder="${dd.est === 'cambiada' ? 'Qué vas a hacer tú en lugar de lo que sugiere Ada (obligatorio)' : 'Por qué la descartas (opcional)'}">${esc(dd.nota || '')}</textarea>${dd.est === 'cambiada' && !dd.nota ? '<div class="warn">Anota qué harás en su lugar.</div>' : ''}`;
+  return h;
+}
+
+/* ---------- ANTES: pasos ---------- */
+function s1(c) {
+  const d = diagOf(c); let h = '<h2>1 · Diagnóstico interno</h2>';
+  if (!d) return h + `<p class="note">Este cliente aún no tiene diagnóstico. Súbelo en <b>Añadir</b> con el Excel estándar (la columna “Marca” debe traer <b>${esc(c.meta.name)}</b>).</p><button class="pri" data-act="nav" data-v="anadir">Ir a Añadir clientes</button>`;
+  h += `<p class="note">${d.live ? 'Datos recién cargados en esta sesión' + (d.savedAt ? ' · último guardado ' + fdate(d.savedAt) : ' · aún sin guardar') : 'Diagnóstico guardado el ' + fdate(d.at) + ' por ' + esc(who(d.by))}. ` +
+    `${(d.live && (!c.diag || c.diag.l3 !== d.l3 || c.diag.trend !== d.trend)) ? '<button class="pri" data-act="saveDiag">Guardar diagnóstico para el equipo</button>' : ''}</p>`;
+  const u = d.useNNS, ali = sec(c, 'dat').alineacion;
+  h += '<div class="dgrid">' +
+    dc('Ventas', money(d.l3, u), `Últimos 3 meses · ventas normales ${P(d.trend)} vs. los 3 meses anteriores`, false) +
+    dc('Historial con Rappi', `${d.nPromoMonths} meses`, `con campañas en el último año · ${d.promoted} de ${d.nProducts} productos han tenido promoción`, false) +
+    dc('ROAS', d.roas != null ? num(d.roas) + 'x' : '–', d.roas != null ? 'Ventas por cada $1 invertido en Rappi Ads' : 'Falta la columna de inversión en el archivo de ventas', false) +
+    dc('Riesgo de abandono', d.risk.level, esc(d.risk.why.join('; ')), true, d.risk.level === 'Alto' ? 'down' : d.risk.level === 'Bajo' ? 'up' : '') +
+    dc('Inversión sobre ventas', d.invGrowth != null ? P(d.invGrowth) : '–', d.hasInv ? `Inversión vs. 3 meses antes (ventas ${P(d.salesGrowth)}) · equivale a ${num((d.invShare || 0) * 100)}% de las ventas` : 'Falta la columna de inversión en el archivo de ventas', false, cls(d.invGrowth)) +
+    dc('Tendencias', `${(d.falling || []).length}↓ ${(d.rising || []).length}↑`, `${(d.falling || []).length + (d.rising || []).length === 0 ? 'Ningún producto cae ni sube más de 10%.' : 'Productos en caída y en alza.'}${(d.falling || [])[0] ? ' Mayor caída: ' + esc(d.falling[0].d) + ' (' + P(d.falling[0].t) + ').' : ''}`, false) +
+    '</div>';
+  h += `<p class="note">Oportunidad de crecimiento: <b>${d.opp.level}</b> <span class="est">Estimación</span> · ${esc(d.opp.why.join('; '))}. Alineación con Rappi Ads: <b>${ali || 'sin definir'}</b> (se define en el paso 2).</p>`;
+  h += '<h3 style="margin-top:14px">Ventas por mes <span class="note" style="font-weight:400">· en coral, los meses con promoción</span></h3><div class="chartbox" style="height:210px"><canvas id="ak-cSeries"></canvas></div>';
+  h += '<h2 style="margin-top:18px;font-size:18px">Lo que Ada te sugiere hacer</h2><p class="note" style="margin:0 0 8px">Para cada sugerencia decide si la aceptas, la cambias por lo que tú quieres hacer, o la descartas. Tu decisión queda guardada y alimenta el paso 5.</p>';
+  h += (d.actions || []).map(a => `<div>${actCard(a)}${decBlock(c, a)}</div>`).join('');
+  return h;
+}
+function s2(c) {
+  const rows = benchRows(), w = weights(), me = rows.findIndex(r => r.name === c.meta.name);
+  let h = '<h2>2 · Benchmark entre clientes</h2>';
+  h += me >= 0 ? `<p>${esc(c.meta.name)} está en el puesto <b>${me + 1} de ${rows.length}</b> con ${rows[me].score != null ? rows[me].score + ' puntos' : 'puntaje sin calcular'}.</p>` : '<p class="note">Aún no hay datos para comparar este cliente.</p>';
+  h += `<div class="field" style="max-width:420px"><label>Alineación del cliente con Rappi Ads (tu criterio)</label>${sel(c, 'dat', 'alineacion', [['', 'Sin definir'], 'Alta', 'Media', 'Baja'])}<div class="tip">Cuenta como un factor del puntaje (${w.alin}% de peso). Si no la defines, se ignora.</div></div>`;
+  h += '<div style="overflow-x:auto"><table><tr><th>#</th><th>Cliente</th><th>Tipo</th><th>Antigüedad</th><th>Alineación</th><th>Ventas 3 m</th><th>Tendencia</th><th>ROAS</th><th>Puntaje</th></tr>' +
+    rows.map((r, i) => `<tr class="${r.name === c.meta.name ? 'sel' : ''}"><td>${i + 1}</td><td><b>${esc(r.name)}</b>${r.saved ? '' : ' <span class="est">sin guardar</span>'}</td><td>${r.tier ? TIERS[r.tier] : '–'}</td><td>${r.since != null && r.since !== '' ? esc(String(r.since).replace('.', ',')) + ' años' : '–'}</td><td>${r.alin ? `<span class="tag ${r.alin}">${r.alin}</span>` : '–'}</td><td>${money(r.d.l3, r.d.useNNS)}</td><td class="${cls(r.d.trend)}">${P(r.d.trend)}</td><td>${r.d.roas != null ? num(r.d.roas) + 'x' : '–'}</td><td>${r.score != null ? `<b>${r.score}</b> <div class="bar" style="width:90px;display:inline-block;margin:0 0 0 6px;vertical-align:middle"><i style="width:${r.score}%"></i></div>` : '–'}</td></tr>`).join('') + '</table></div>';
+  const tc = [1, 2, 3].map(t => `<span class="chip">${TIERS[t]} · ${rows.filter(r => r.tier === t).length}</span>`).join('') + `<span class="chip">Sin tipo · ${rows.filter(r => !r.tier).length}</span>`;
+  const ab = (f) => rows.filter(r => { const s = r.since === '' || r.since == null ? null : +r.since; return f(s); }).length;
+  const ac = `<span class="chip">Nuevos (menos de 1 año) · ${ab(s => s != null && s < 1)}</span><span class="chip">1 a 3 años · ${ab(s => s != null && s >= 1 && s <= 3)}</span><span class="chip">Más de 3 años · ${ab(s => s != null && s > 3)}</span><span class="chip">Sin dato · ${ab(s => s == null)}</span>`;
+  h += `<h3 style="margin-top:16px">Segmentación</h3><div>${tc}</div><div>${ac}</div>`;
+  h += `<div class="row2" style="margin-top:8px"><div class="field"><label>Antigüedad con Rappi Ads (años)</label>${inp(c, 'meta', 'since', 'number', 'Ej.: 2')}</div></div>`;
+  h += `<details style="margin-top:10px"><summary>Escala del puntaje <span class="est">por definir</span> · ajusta cuánto pesa cada factor</summary><p class="note" style="margin:6px 0">De 0 a 100. Se guarda para todo el equipo. Si un factor no tiene dato, se ignora.</p><div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end">` +
+    [['ventas', 'Ventas'], ['tendencia', 'Tendencia'], ['roas', 'ROAS'], ['antig', 'Antigüedad'], ['alin', 'Alineación']].map(([k, l]) => `<div class="field" style="margin:0"><label>${l}</label><input class="w" type="number" min="0" max="100" data-w="${k}" value="${w[k]}"></div>`).join('') + '<button class="pri" data-act="saveWeights">Guardar escala</button></div></details>';
+  return h;
+}
+function inviteMsg(c) {
+  const inv = sec(c, 'inv'), me = state.names[state.uid] || '[tu nombre]', d = diagOf(c), link = userCfg().agenda || '[pega tu link para agendar]';
+  const fch = inv.fecha ? new Date(inv.fecha + 'T12:00').toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' }) : '';
+  return `Asunto: Invitación al Rappi Club · ${c.meta.name}\n\nHola ${inv.contacto || '[nombre]'},\n\nSoy ${me} del equipo de Rappi Ads. Revisamos cómo viene ${c.meta.name} en Rappi y ${d && d.opp.level !== 'Baja' ? 'vemos espacio para crecer con campañas bien enfocadas' : 'queremos revisar juntos las próximas campañas'}.\n\nTe invitamos al Rappi Club: una sesión de trabajo de ${cfg().sesion} minutos para diseñar juntos tu próxima campaña, con foco en los objetivos de tu negocio.\n\n${fch ? `Te proponemos el ${fch}${inv.hora ? ' a las ' + inv.hora : ''}. ` : ''}Agenda el horario que mejor te acomode aquí: ${link}\n\nUn abrazo,\n${me}`;
+}
+function s3(c) {
+  const inv = sec(c, 'inv'), est = inv.estado || 'pendiente';
+  let h = `<h2>3 · Enviar invitación al Rappi Club</h2><p class="note">Una sesión de trabajo de ${cfg().sesion} minutos para diseñar juntos la próxima campaña. El envío es siempre por <b>correo</b>. <span class="tag ${est === 'aceptada' ? 'Alta' : est === 'rechazada' ? 'Baja' : est === 'enviada' ? 'Media' : 'p3'}">${est[0].toUpperCase() + est.slice(1)}</span></p>`;
+  h += `<div class="row2"><div class="field"><label>Contacto del cliente</label>${inp(c, 'inv', 'contacto', 'text', 'Nombre y cargo')}</div><div class="field"><label>Correo del contacto</label>${inp(c, 'inv', 'email', 'text', 'nombre@empresa.com')}</div></div>`;
+  h += `<div class="row2"><div class="field"><label>Fecha propuesta</label>${inp(c, 'inv', 'fecha', 'date')}</div><div class="field"><label>Hora propuesta</label>${inp(c, 'inv', 'hora', 'time')}</div></div>`;
+  h += `<div class="field"><label>Tu link para agendar <span class="note" style="font-weight:400">(se guarda en tu perfil y va en el mensaje)</span></label><input type="text" data-uc="agenda" value="${esc(userCfg().agenda || '')}" placeholder="https://calendly.com/…"></div>`;
+  h += `<div class="field"><label>Mensaje (correo)</label>${txa(c, 'inv', 'mensaje', 'Presiona “Generar mensaje base” o “Redactar con Ada”')}</div>`;
+  h += '<div style="display:flex;gap:10px;flex-wrap:wrap"><button data-act="genMsg">Generar mensaje base</button><button data-act="adaMsg">Redactar con Ada</button><button data-act="copyMsg">Copiar mensaje</button><button class="pri" data-act="sent">Marcar como enviada</button></div>';
+  if (inv.sentAt) h += `<p class="note" style="margin-top:10px">Enviada por ${esc(who(inv.sentBy))} el ${fdate(inv.sentAt)}. Cuando el cliente responda, registra su respuesta en el paso siguiente.</p>`;
+  return h;
+}
+function gate(c) {
+  const inv = sec(c, 'inv'), est = inv.estado || 'pendiente';
+  let h = '<h2>Respuesta del cliente</h2><div class="gate">';
+  if (est === 'aceptada') {
+    h += `<p>✓ <b>${esc(c.meta.name)}</b> aceptó la invitación${inv.acceptedAt ? ' el ' + fdate(inv.acceptedAt) : ''}. Los pasos 4, 5 y 6 están desbloqueados.</p><div class="row2"><div class="field"><label>Fecha confirmada de la sesión</label>${inp(c, 'inv', 'fecha', 'date')}</div><div class="field"><label>Hora confirmada</label>${inp(c, 'inv', 'hora', 'time')}</div></div><button data-act="reopenInv">Volver a “Enviada”</button> <button class="pri" data-act="step" data-n="4">Ir al paso 4 →</button>`;
+  } else {
+    h += `<p><b>Los pasos 4, 5 y 6 están bloqueados</b> hasta que el cliente acepte la invitación. ${est === 'pendiente' ? 'Primero envía la invitación en el paso 3.' : est === 'enviada' ? 'Invitación enviada: espera su respuesta.' : 'El cliente rechazó la invitación.'}</p>`;
+    if (est === 'pendiente') h += '<button class="pri" data-act="step" data-n="3">Ir al paso 3</button>';
+    else {
+      h += `<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="pri" data-act="accept">El cliente aceptó</button><button data-act="reject">El cliente rechazó</button></div>`;
+      if (est === 'rechazada') h += `<div class="field"><label>Motivo del rechazo (obligatorio)</label>${txa(c, 'inv', 'motivo', 'Anota por qué rechazaron')}${inv.motivo ? '' : '<div class="warn">Falta anotar el motivo.</div>'}</div><button data-act="reopenInv">Reabrir: volver a “Enviada”</button>`;
+    }
+  }
+  return h + '</div>';
+}
+function s4(c) {
+  const d = diagOf(c), dat = sec(c, 'dat'), learn = learnings(), tp = dat.objTipo || '';
+  const [ml, mph] = OBJ_META[tp] || OBJ_META['Volumen de ventas'];
+  let h = '<h2>4 · Análisis de data interna</h2>';
+  h += `<h3>4.1 Objetivos del cliente</h3><div class="row2"><div class="field"><label>Tipo de objetivo</label>${sel(c, 'dat', 'objTipo', [['', 'Sin definir'], ...OBJ_TIPOS])}</div></div><div class="field"><label>Qué quiere lograr, con sus palabras</label>${txa(c, 'dat', 'objetivos', 'Ej.: crecer en la categoría de snacks en temporada alta')}</div>`;
+  h += `<h3 style="margin-top:14px">4.2 Data interna de ventas</h3>` + (d ? `<p class="note">${d.live ? '✓ Cargada en esta sesión.' : '✓ Hay un diagnóstico guardado el ' + fdate(d.at) + '.'} ${d.series.length} meses de ventas · ${d.nProducts} productos.</p>` : '<p class="note">Aún no hay data de ventas de este cliente. <button class="link" data-act="nav" data-v="anadir">Subirla en Añadir</button></p>');
+  h += '<h3 style="margin-top:18px">4.3 Qué ha funcionado en campañas anteriores</h3>';
+  if (learn && learn.band && learn.band.length) {
+    const top = (l) => [...(l || [])].filter(x => x.n >= 2).sort((a, b) => b.up - a.up)[0];
+    const b = top(learn.band), t = top(learn.tipo), du = top(learn.dur), tot = learn.band.reduce((s, x) => s + x.n, 0), gm = learn.band.reduce((s, x) => s + x.up * x.n, 0) / (tot || 1);
+    h += `<ul style="margin:4px 0 8px;padding-left:18px"><li>Descuento que más sube las ventas: <b>${b ? esc(b.key) : '–'}</b> (${b ? P(b.up) : '–'})</li><li>Tipo de anuncio: <b>${t ? esc(t.key) : '–'}</b>${t ? ' (' + P(t.up) + ')' : ''}</li><li>Duración: <b>${du ? esc(du.key) : '–'}</b>${du ? ' (' + P(du.up) + ')' : ''}</li></ul>`;
+    if (d && d.avgUp != null) h += `<p class="note">Este cliente: sus promos suben ${P(d.avgUp)} en promedio, frente a ${P(gm)} del resto (${tot} promociones analizadas).</p>`;
+    const mt = (tt, l, k) => l && l.length ? `<div><h3>${tt}</h3><table><tr><th>${k}</th><th>Alza</th><th>Promos</th></tr>${l.map(g => `<tr><td>${esc(g.key)}</td><td>${P(g.up)}</td><td>${g.n}</td></tr>`).join('')}</table></div>` : '';
+    h += '<details><summary>Ver detalle por descuento, tipo y duración</summary><div class="grid2" style="margin-top:8px">' + mt('Por descuento', learn.band, 'Tramo') + mt('Por tipo de anuncio', learn.tipo, 'Tipo') + mt('Por duración', learn.dur, 'Duración') + '</div></details>';
+  } else h += '<p class="note">Se llena al subir y analizar los archivos de tus clientes.</p>';
+  h += `<h3 style="margin-top:18px">4.4 Alinear objetivos con la situación actual</h3><div class="row2"><div class="field"><label>${ml}</label>${inp(c, 'dat', 'meta', 'number', mph)}</div><div class="field"><label>Plazo (meses)</label>${inp(c, 'dat', 'plazo', 'number', 'Ej.: 3')}</div></div>${tp ? '' : '<div class="tip">Elige el tipo de objetivo en 4.1 para ajustar la unidad de la meta.</div>'}<div id="ak-verdict">${verdict(c, d)}</div>`;
+  const links = dat.links || [];
+  h += `<h3 style="margin-top:16px">4.5 Fuentes y data pública</h3><div class="tip">Ada no puede leer sitios web desde aquí: pega el enlace y una nota.</div>` +
+    links.map((l, i) => `<div class="tip"><b>${esc(l.tipo)}</b> · ${esc(l.url)} · ${esc(l.nota)} <button class="link" data-act="delLink" data-i="${i}">Quitar</button></div>`).join('') +
+    '<div class="rowform l"><select id="ak-lt"><option>Web</option><option>Redes sociales</option><option>Prensa</option><option>Informe de mercado</option></select><input type="text" id="ak-lu" placeholder="Enlace"><input type="text" id="ak-ln" placeholder="Nota: qué encontraste"><button data-act="addLink">Agregar</button></div>';
+  return h;
+}
+function s5(c) {
+  const d = diagOf(c), fic = sec(c, 'fic'), dat = sec(c, 'dat'), dec = sec(c, 'dec'), os = objetivoSugerido(c, d), learn = learnings(), sug = metodoSug(c), ef = metodoEff(c), t = tierOf(c);
+  let h = '<h2>5 · Ficha de cliente <span class="note" style="font-weight:400">(solo para ti, KAM)</span></h2>';
+  h += '<h3>5.1 Resumen de toda la data interna</h3>';
+  if (d) {
+    h += `<div style="overflow-x:auto"><table class="t5"><tr><th>Indicador</th><th>Valor</th><th>Lectura</th></tr>` +
+      [['Ventas (3 meses)', money(d.l3, d.useNNS), `Ventas normales ${P(d.trend)} vs. los 3 meses anteriores`], ['Retorno (ROAS)', d.roas != null ? num(d.roas) + 'x' : '–', 'Ventas por cada $1 en Rappi Ads'], ['Inversión', d.invGrowth != null ? P(d.invGrowth) : '–', d.hasInv ? `${num((d.invShare || 0) * 100)}% de las ventas` : 'Sin columna de inversión'], ['Promociones', `${d.nPromoMonths} meses`, `${d.promoted} de ${d.nProducts} productos; alza promedio ${P(d.avgUp)}`], ['Riesgo de abandono', d.risk.level, d.risk.why.join('; ')], ['Oportunidad', d.opp.level, d.opp.why.join('; ')], ['Productos', `${(d.falling || []).length}↓ ${(d.rising || []).length}↑`, (d.falling || [])[0] ? 'Mayor caída: ' + d.falling[0].d + ' (' + P(d.falling[0].t) + ')' : 'Sin caídas relevantes'], ['Alineación con Rappi Ads', dat.alineacion || 'Sin definir', 'Criterio del KAM (paso 2)']]
+        .map(r => `<tr><td>${esc(r[0])}</td><td><b>${esc(r[1])}</b></td><td>${esc(r[2])}</td></tr>`).join('') + '</table></div>';
+    h += '<div class="charts" style="margin-top:14px"><div><h3>Ventas e inversión por mes</h3><div class="chartbox" style="height:250px"><canvas id="ak-c5a"></canvas></div></div><div><h3>Productos que más cambian</h3><div class="chartbox" style="height:250px"><canvas id="ak-c5b"></canvas></div></div></div>';
+  } else h += '<p class="note">Sin diagnóstico aún: sube la data en Añadir.</p>';
+  const decs = (d && d.actions || []).map(a => ({ a, dd: dec[decKey(a)] })).filter(x => x.dd && x.dd.est);
+  if (decs.length) h += '<h3 style="margin-top:14px">Tus decisiones frente a lo que sugiere Ada</h3><div style="overflow-x:auto"><table><tr><th>Sugerencia de Ada</th><th>Decisión</th><th>Lo que haré yo</th></tr>' + decs.map(x => `<tr><td>${esc(x.a.title)}</td><td><span class="tag ${x.dd.est === 'aceptada' ? 'Alta' : x.dd.est === 'cambiada' ? 'Media' : 'p3'}">${x.dd.est[0].toUpperCase() + x.dd.est.slice(1)}</span></td><td>${esc(x.dd.nota || '')}</td></tr>`).join('') + '</table></div>';
+  h += `<div class="field"><label>Resumen en palabras</label><div class="ada" style="margin-top:0;font-weight:400">${esc(summaryText(c, d))}</div><button data-act="adaResumen" style="margin-top:8px">Mejorar redacción con Ada</button><div id="ak-ada"></div></div><div class="field"><label>Tus notas</label>${txa(c, 'fic', 'notas', 'Contexto que no está en los datos')}</div>`;
+  /* 5.2 */
+  const camps = fic.camps || [], F = cfg().formula;
+  h += `<h3 style="margin-top:16px">5.2 Fórmula de Ada → nuevo objetivo <span class="est">${F ? 'fórmula de Angélica cargada' : 'pendiente: fórmula de Angélica'}</span></h3>`;
+  h += `<div class="field"><label>Fórmula de Angélica <span class="note" style="font-weight:400">(se guarda para todo el equipo)</span></label><textarea data-cf="formula" placeholder="Pega aquí la fórmula o criterio que definió Angélica">${esc(F)}</textarea></div>`;
+  h += `<div style="margin-bottom:6px">${signals(d).map(s => `<span class="chip">${esc(s)}</span>`).join('') || '<span class="note">Sin señales: falta diagnóstico.</span>'}</div>${os ? `<div class="ada" style="margin-top:6px"><b>Objetivo sugerido por Ada:</b> ${esc(os)}</div>` : ''}`;
+  h += `<h3 style="margin-top:12px;font-size:14px">Campañas que planificas</h3><div class="tip">Los objetivos deben calzar con las campañas que pongas aquí. Ada compara cada una con lo que mejor ha funcionado.</div>`;
+  if (camps.length) {
+    h += '<div style="overflow-x:auto"><table><tr><th>Producto / campaña</th><th>Tipo</th><th>Descuento</th><th>Días</th><th>Mes</th><th>Lectura de Ada</th><th></th></tr>' + camps.map((x, i) => {
+      const bd = learn && learn.band && x.pct != null ? learn.band.find(g => g.key === band(+x.pct)) : null, dd = learn && learn.dur && x.dur ? learn.dur.find(g => g.key === durBand(+x.dur)) : null;
+      const bestB = learn && learn.band ? [...learn.band].filter(g => g.n >= 2).sort((a, b) => b.up - a.up)[0] : null;
+      let note = bd ? `Descuento ${band(+x.pct)}: alza histórica ${P(bd.up)}` : 'Sin referencia';
+      if (dd) note += ` · duración ${P(dd.up)}`;
+      if (bd && bestB && bestB.key !== bd.key && bestB.up - bd.up > 0.05) note += `. Probar ${bestB.key} (${P(bestB.up)})`;
+      return `<tr><td>${esc(x.desc)}</td><td>${esc(x.tipo || '–')}</td><td>${x.pct != null ? x.pct + '%' : '–'}</td><td>${x.dur || '–'}</td><td>${esc(x.mes || '–')}</td><td class="note">${esc(note)}</td><td><button class="link" data-act="delCamp" data-i="${i}">Quitar</button></td></tr>`;
+    }).join('') + '</table></div>';
+  }
+  h += '<div class="rowform"><input type="text" id="ak-cd" placeholder="Producto o campaña"><input type="text" id="ak-ct" placeholder="Tipo de anuncio"><input type="number" id="ak-cp" placeholder="% desc."><input type="number" id="ak-cdu" placeholder="Días"><input type="text" id="ak-cm" placeholder="Mes"><button data-act="addCamp">Agregar</button></div>';
+  h += `<div class="field"><label>Objetivo acordado</label>${txa(c, 'fic', 'objetivoAcordado', 'Edita, pega la sugerencia o arma uno desde tus campañas')}</div><div style="display:flex;gap:10px;flex-wrap:wrap">${os ? '<button data-act="useObj">Usar la sugerencia de Ada</button>' : ''}${camps.length ? '<button data-act="objFromCamps">Armar objetivo desde mis campañas</button>' : ''}</div>`;
+  /* 5.3 */
+  h += `<h3 style="margin-top:16px">5.3 Tipo de cliente</h3><p class="note">Ada sugiere: <b>${c.diag && c.diag.tierAuto ? TIERS_L[c.diag.tierAuto] : 'sin dato (cliente nuevo: elígelo tú)'}</b>. <b>Si lo cambias, cambia la metodología sugerida en 5.4.</b></p><div class="field" style="max-width:360px">${sel(c, 'meta', 'tier', [[0, 'Automático'], [1, TIERS_L[1]], [2, TIERS_L[2]], [3, TIERS_L[3]]])}</div>`;
+  /* 5.4 */
+  h += `<h3 style="margin-top:16px">5.4 Metodología a ofrecer en la reunión</h3>` + (sug ? `<p class="note">Según el tipo de cliente (${TIERS[t]}), Ada sugiere <b>${METODOS.find(m => m.k === sug.k).t}</b>. ${esc(sug.why)}</p>` : '<p class="note">Define el tipo de cliente en 5.3 para recibir una sugerencia.</p>');
+  h += METODOS.map(m => `<label class="opt${ef === m.k ? ' on' : ''}" data-act="pickM" data-k="${m.k}"><input type="radio" ${ef === m.k ? 'checked' : ''}><b>${m.t}</b> <span class="est">${metodoMin(m.k)} min</span>${sug && sug.k === m.k ? ' <span class="tag Alta">Sugerida por Ada</span>' : ''}<small>${m.d}</small></label>`).join('') + (fic.metManual && sug ? '<button class="link" data-act="resetM">Volver a la sugerida por Ada</button>' : '');
+  /* 5.5 */
+  h += `<h3 style="margin-top:16px">5.5 Tratos comerciales y aspectos legales</h3><div class="warn"><b>Por validar:</b> falta confirmar con Angélica qué contrato aplica (riesgo compartido u otro) y hacer la revisión legal completa antes de ofrecerlo al cliente.</div><div class="field" style="max-width:420px"><label>Estado del contrato</label>${sel(c, 'fic', 'contrato', ['Por validar con Angélica', 'Contrato definido por Angélica', 'En revisión legal', 'Aprobado por Legal'])}</div>${chk(c, 'fic', 'c1', 'Confidencialidad de presupuestos entre marcas (sesiones de colaboración)')}${chk(c, 'fic', 'c2', 'Términos y políticas de Rappi Ads revisados con el cliente')}${chk(c, 'fic', 'c4', 'Revisión legal completa (Legal)')}<div class="field"><label>Otras condiciones a tener en cuenta</label>${txa(c, 'fic', 'tratos', 'Acuerdos especiales, exclusividades, restricciones')}</div>`;
+  return h;
+}
+function briefAuto(c) {
+  const fic = sec(c, 'fic'), dat = sec(c, 'dat'), m = METODOS.find(x => x.k === metodoEff(c)), t = tierOf(c);
+  const rows = [['Cliente', c.meta.name + (t ? ' · ' + TIERS[t] : '')], ['Objetivo', fic.objetivoAcordado || '—'], ['Tipo de objetivo y meta', (dat.objTipo || '—') + (dat.meta ? ' · meta ' + dat.meta + (dat.plazo ? ' en ' + dat.plazo + ' meses' : '') : '')], ['Metodología', m ? m.t + ' · ' + metodoMin(m.k) + ' min' : '—'],
+    ['Campañas planificadas', (fic.camps || []).length ? (fic.camps || []).map(x => `${x.desc}${x.pct != null ? ' (' + x.pct + '%' : ' ('}${x.dur ? ', ' + x.dur + ' días' : ''}${x.mes ? ', ' + x.mes : ''})`).join('; ') : '—'], ['Condiciones', fic.tratos || '—']];
+  return rows;
+}
+function approvalHtml(c) {
+  const caso = sec(c, 'caso'), fic = sec(c, 'fic'), ap = caso.aprobado;
+  const miss = []; if (!metodoEff(c)) miss.push('metodología (paso 5.4)'); if (!fic.objetivoAcordado) miss.push('objetivo (paso 5.2)'); if (!caso.eq_kam) miss.push('KAM del equipo');
+  return '<div class="card" style="margin:16px 0 0;background:#fff8f6"><h3>Aprobación</h3>' + (ap ? `<p>✓ Aprobada por <b>${esc(who(ap.by))}</b> el ${fdate(ap.at)}. La sesión está lista.</p><button data-act="unapprove">Quitar aprobación</button>` :
+    (miss.length ? `<p class="note">Para aprobar falta: ${miss.join(', ')}.</p>` : '<p class="note">Todo listo para aprobar.</p>') + `<button class="pri" data-act="approve"${miss.length ? ' disabled' : ''}>Aprobar ficha del caso</button>`) + '</div>';
+}
+function s6(c) {
+  const caso = sec(c, 'caso'), m = METODOS.find(x => x.k === metodoEff(c));
+  let h = '<h2>6 · Ficha del caso</h2><h3>6.1 Qué metodología se implementará <span class="est">automático</span></h3>';
+  h += m ? `<div class="opt on"><b>${m.t}</b> <span class="est">${metodoMin(m.k)} min</span><small>${m.d}</small></div><p class="tip">Viene del paso 5.4. Para cambiarla, <button class="link" data-act="step" data-n="5">ve al paso 5</button>.</p>` : '<div class="warn">Aún no hay metodología: elígela en el paso 5.4.</div>';
+  const tl = teams();
+  h += '<h3 style="margin-top:16px">6.2 Equipo presente</h3>' + (tl.length ? `<div class="field" style="max-width:420px"><label>Equipo listo de la biblioteca</label><select id="ak-teamsel"><option value="">Elegir un equipo…</option>${tl.map(t => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('')}</select></div>` : '<p class="note">Aún no hay equipos en la biblioteca. Completa uno abajo y guárdalo para reutilizarlo.</p>');
+  h += '<div class="row2">' + ROLES.map(([k, l]) => `<div class="field"><label>${l}</label>${inp(c, 'caso', 'eq_' + k, 'text', k === 'externos' ? 'Nombres separados por coma' : 'Nombre')}</div>`).join('') + '</div>';
+  h += '<div class="rowform l" style="grid-template-columns:1fr auto"><input type="text" id="ak-teamname" placeholder="Nombre para guardar este equipo en la biblioteca"><button data-act="saveTeam">Guardar equipo</button></div>';
+  h += '<h3 style="margin-top:16px">6.3 Brief base del maker <span class="est">automático desde el paso 5</span></h3><table class="t5">' + briefAuto(c).map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join('') + `</table><div class="field"><label>Notas adicionales del maker (opcional)</label>${txa(c, 'caso', 'brief', 'Qué trae el maker: materiales, restricciones, fechas')}</div>`;
+  h += '<div id="ak-appr">' + approvalHtml(c) + '</div>';
+  return h;
+}
+const SOON = {
+  durante: ['Aquí vivirá la “secret sauce” de la sesión (por definir con el equipo)', 'Se sube la orden de compra y se “carga” el presupuesto', 'Ada rellena la plantilla de reporte de la reunión del Rappi Club', 'Si el cliente rechaza, se registra el porqué'],
+  despues: ['Seguimiento PRE launch: brief de traspaso del KAM a operaciones, aprobación del cliente, términos y políticas, configuración de campaña, métricas de éxito y aviso al cliente', 'Seguimiento POST launch: evidencia de envío, reporte de desempeño (métricas, ventas, visibilidad y ROAS), alertas, ajustes sugeridos, resumen de Ada y resultados en vivo']
+};
+
+/* ---------- vistas ---------- */
+function clientList() { return Object.values(state.clients).filter(c => c.meta).sort((a, b) => (a.meta.name || '').localeCompare(b.meta.name || '')); }
+function renderClientes() {
+  const list = clientList(), hasSample = list.some(c => c.meta.sample);
+  let h = '<div class="crumb">Clientes</div><div class="titlerow"><h1>Clientes</h1></div><p class="sub">Elige un cliente para preparar su sesión del Rappi Club. Todo lo que anotes queda guardado para el equipo.</p>';
+  h += '<div class="card"><div class="head"><h2>Clientes del equipo</h2><div style="display:flex;gap:8px;flex-wrap:wrap">' + (hasSample ? '<button data-act="rmSamples">Quitar clientes de ejemplo</button>' : '') + '<button class="pri" data-act="nav" data-v="anadir">+ Añadir clientes</button></div></div>';
+  if (!list.length) h += '<p class="note">Todavía no hay clientes guardados. Ve a <b>Añadir</b> para subir el Excel estándar o crear uno a mano.</p>';
+  else h += '<div style="overflow-x:auto"><table><tr><th>Cliente</th><th>Tipo</th><th>Responsable</th><th>Ventas 3 m</th><th>Tendencia</th><th>Riesgo</th><th>Avance ANTES</th><th>Invitación</th></tr>' + list.map(c => {
+    const d = c.diag, t = tierOf(c), done = stepsDone(c), est = sec(c, 'inv').estado || 'pendiente';
+    return `<tr class="pick" data-act="open" data-id="${esc(c.id)}"><td><b>${esc(c.meta.name)}</b>${c.meta.sample ? ' <span class="est">ejemplo</span>' : ''}</td><td>${t ? TIERS[t] : '–'}</td><td>${c.meta.owner ? esc(who(c.meta.owner)) : '–'}</td><td>${d ? money(d.l3, d.useNNS) : '–'}</td><td class="${d ? cls(d.trend) : ''}">${d ? P(d.trend) : '–'}</td><td>${d ? `<span class="tag ${d.risk.level === 'Alto' ? 'Baja' : d.risk.level === 'Medio' ? 'Media' : 'Alta'}">${d.risk.level}</span>` : '–'}</td><td><div class="bar" style="width:90px;display:inline-block;margin:0 6px 0 0;vertical-align:middle"><i style="width:${done / 6 * 100}%"></i></div>${done}/6</td><td><span class="tag ${est === 'aceptada' ? 'Alta' : est === 'rechazada' ? 'Baja' : est === 'enviada' ? 'Media' : 'p3'}">${est[0].toUpperCase() + est.slice(1)}</span></td></tr>`;
+  }).join('') + '</table></div>';
+  return h + '</div>';
+}
+function conformity(kind) {
+  const t = state[kind], m = state.map[kind];
+  if (!t) return '<span class="note">Falta subir</span>';
+  const fl = FIELDS[kind], miss = fl.filter(f => f.req && !m[f.k]), nm = !m.marca;
+  return `<span class="note">${esc(t.label || '')} · ${t.rows.length} filas</span><div style="margin-top:6px">` + fl.map(f => `<div class="tip">${m[f.k] ? '✓' : (f.req || f.k === 'marca') ? '<span class="down">✗</span>' : '–'} ${esc(f.label.replace(' (opcional)', '').replace(/ \(opcional, [^)]*\)/, ''))}${m[f.k] ? ' <span class="note">← ' + esc(m[f.k]) + '</span>' : ''}</div>`).join('') + '</div>' +
+    (miss.length ? `<div class="err">Faltan columnas obligatorias: ${miss.map(f => esc(f.label)).join(', ')}. Usa la plantilla estándar.</div>` : '') + (nm && !miss.length ? '<div class="warn">No hay columna “Marca”: Ada no podrá separar a tus clientes. Usa la plantilla estándar.</div>' : '') +
+    `<details><summary>Ajustar columnas manualmente</summary><div class="map">${fl.map(f => `<span>${esc(f.label)}</span><select data-kind="${kind}" data-k="${f.k}"><option value="">— ninguna —</option>${t.headers.map(h => `<option${m[f.k] === h ? ' selected' : ''}>${esc(h)}</option>`).join('')}</select>`).join('')}</div></details>`;
+}
+function renderAnadir() {
+  const res = state.res, list = clientList();
+  let h = '<div class="crumb">Añadir</div><div class="titlerow"><h1>Añadir clientes</h1></div><p class="sub">Todos los KAM suben el mismo Excel. Así Ada lee igual los datos de cualquier cliente.</p>';
+  h += '<div class="card"><div class="head"><h2>1 · Excel estándar de Ada</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="pri" data-act="tpl">Descargar plantilla (.xlsx)</button><button data-act="tplCopy">Copiar encabezados</button></div></div><p class="note">Un archivo con 2 hojas: <b>Promociones</b> y <b>Ventas</b>. Mantén los nombres de las columnas tal cual. Una fila por producto y mes; todos los clientes pueden ir en el mismo archivo si la columna Marca los distingue.</p><div class="grid2">' +
+    ['promo', 'ventas'].map(k => `<div><h3>Hoja ${k === 'promo' ? 'Promociones' : 'Ventas'}</h3><table><tr><th>Columna</th><th></th></tr>${STD[k].map(c => `<tr><td>${esc(c[0])}</td><td>${c[1] ? '<span class="tag Alta">Obligatoria</span>' : '<span class="note">Opcional</span>'}</td></tr>`).join('')}</table></div>`).join('') + '</div></div>';
+  h += `<div class="card"><h2>2 · Sube el archivo</h2><div class="drop" id="ak-drop"><b>Arrastra aquí tu Excel o CSV</b><span class="note">Con la plantilla estándar basta un solo archivo. También puedes soltar dos (promociones y ventas).</span><br><input type="file" id="ak-files" accept=".xlsx,.xls,.csv" multiple></div><div class="files"><div class="slot${state.promo ? ' ok' : ''}"><b>Promociones</b>${conformity('promo')}</div><div class="slot${state.ventas ? ' ok' : ''}"><b>Ventas</b>${conformity('ventas')}</div></div>${state.upErr ? `<div class="err">${esc(state.upErr)}</div>` : ''}<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px"><button class="pri" data-act="run"${upReady() ? '' : ' disabled'}>Analizar</button><button data-act="sampleGo">Probar con datos de ejemplo</button></div></div>`;
+  if (res) h += `<div class="card"><h2>3 · Clientes encontrados</h2><p>Ada analizó los archivos y encontró <b>${res.brands.length}</b> cliente${res.brands.length > 1 ? 's' : ''}: ${res.brands.map(b => `<span class="chip">${esc(b.name)}</span>`).join('')}</p><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="pri" data-act="saveAll">Guardar los ${res.brands.length} clientes en el equipo</button>${res.brands.length ? '' : ''}</div><p class="note">Solo se guardan los resultados del análisis, no las filas del Excel.</p></div>`;
+  h += `<div class="card"><h2>${res ? '4' : '3'} · O agrega un cliente a mano</h2><div class="row2" style="align-items:end"><div class="field" style="margin:0"><label>Nombre de la marca o cliente</label><input type="text" id="ak-nn" placeholder="Nombre" value="${esc(state.newName)}"></div><div><button data-act="newClient">Agregar cliente</button></div></div><p class="note">${list.length} cliente${list.length === 1 ? '' : 's'} en el equipo hasta ahora.</p></div>`;
+  return h;
+}
+function kpiRow(c) {
+  const dat = sec(c, 'dat'), k = sec(c, 'kpi'), d = diagOf(c), tp = dat.objTipo || '', meta = dat.meta === '' || dat.meta == null ? null : +dat.meta;
+  const vol = tp === 'Volumen de ventas', base = dat.base && dat.base.l3, act = d ? d.l3 : null;
+  let actual = null, avance = null, ok = null;
+  if (vol) { actual = base && act != null ? (act / base - 1) * 100 : null; avance = actual; ok = actual != null && meta != null ? actual >= meta : null; }
+  else if (tp) { actual = k.actual === '' || k.actual == null ? null : +k.actual; avance = actual; ok = actual != null && meta != null ? actual >= meta : null; }
+  return { c, tp, vol, meta, base, act, actual, ok, sat: tp === 'Satisfacción del cliente', sample: !!c.meta.sample };
+}
+function renderKpis() {
+  const rows = clientList().map(kpiRow), withGoal = rows.filter(r => r.meta != null && r.tp), met = rows.filter(r => r.ok).length;
+  const vols = rows.filter(r => r.vol && r.base && r.act != null), vb = vols.reduce((s, r) => s + r.base, 0), va = vols.reduce((s, r) => s + r.act, 0);
+  const sats = rows.filter(r => r.sat && r.actual != null), nuevos = rows.filter(r => r.tp === 'Nuevos clientes captados' && r.actual != null).reduce((s, r) => s + r.actual, 0), react = rows.filter(r => r.tp === 'Clientes reactivados' && r.actual != null).reduce((s, r) => s + r.actual, 0);
+  let h = '<div class="crumb">KPIs</div><div class="titlerow"><h1>KPIs y metas cumplidas</h1></div><p class="sub">Cómo van los objetivos que acordaste con cada cliente (los defines en el paso 4).</p>';
+  h += '<div class="kpis">' + [['Metas cumplidas', `${met}/${withGoal.length}`, ''], ['Volumen de ventas', vb ? P(va / vb - 1) : '–', vb ? cls(va / vb - 1) : ''], ['Satisfacción promedio', sats.length ? num(sats.reduce((s, r) => s + r.actual, 0) / sats.length) : '–', ''], ['Nuevos clientes', nuevos || (rows.some(r => r.tp === 'Nuevos clientes captados') ? '0' : '–'), ''], ['Reactivados', react || (rows.some(r => r.tp === 'Clientes reactivados') ? '0' : '–'), '']].map(x => `<div class="kpi"><span>${x[0]}</span><b class="${x[2]}">${x[1]}</b></div>`).join('') + '</div>';
+  h += '<div class="card"><div class="head"><h2>Por cliente</h2></div>' + (rows.length ? '<div style="overflow-x:auto"><table><tr><th>Cliente</th><th>Objetivo</th><th>Meta</th><th>Base</th><th>Resultado actual</th><th>Cumplida</th></tr>' + rows.map(r => {
+    const c = r.c, mu = r.tp ? OBJ_META[r.tp][0].match(/\((.*)\)/) : null;
+    const cell = !r.tp ? '<span class="note">Define el objetivo en el paso 4</span>' : r.vol ? (r.base ? `<b class="${cls(r.actual)}">${P(r.actual / 100)}</b>` : '<span class="note">Fija la base →</span>') : `<input type="number" step="any" class="w" data-cid="${esc(c.id)}" data-f="kpi.actual" value="${esc(sec(c, 'kpi').actual == null ? '' : sec(c, 'kpi').actual)}" placeholder="Resultado">`;
+    return `<tr><td><b>${esc(c.meta.name)}</b></td><td>${esc(r.tp || '–')}</td><td>${r.meta != null ? r.meta + (r.vol ? '%' : '') : '–'}</td><td>${r.vol ? (r.base ? money(r.base, r.c.diag && r.c.diag.useNNS) : `<button class="link" data-act="setBase" data-id="${esc(c.id)}">Fijar base (ventas 3 m)</button>`) : '–'}</td><td>${cell}</td><td>${r.ok == null ? '–' : r.ok ? '<span class="tag Alta">Sí</span>' : '<span class="tag Media">En camino</span>'}</td></tr>`;
+  }).join('') + '</table></div><p class="note">Para volumen de ventas, la base es el valor de “Ventas 3 m” al momento de fijarla; el avance compara las ventas de los últimos 3 meses con esa base.</p>' : '<p class="note">Aún no hay clientes.</p>') + '</div>';
+  return h;
+}
+function renderSesion() {
+  const mine = state.onlyMine, all = clientList().filter(c => !mine || !c.meta.owner || c.meta.owner === state.uid);
+  const acc = all.filter(c => sec(c, 'inv').estado === 'aceptada').sort((a, b) => (sec(a, 'inv').fecha || '9').localeCompare(sec(b, 'inv').fecha || '9'));
+  const wait = all.filter(c => sec(c, 'inv').estado === 'enviada'), todo = all.filter(c => !sec(c, 'inv').estado || sec(c, 'inv').estado === 'pendiente');
+  let h = '<div class="crumb">Mi sesión</div><div class="titlerow"><h1>Mi sesión</h1></div><p class="sub">Tus próximas sesiones del Rappi Club y lo que falta para cada una.</p>';
+  h += `<div class="card"><div class="head"><h2>Preferencias</h2><label class="chk" style="padding:0"><input type="checkbox" data-act="mine"${mine ? ' checked' : ''}><span>Solo mis clientes</span></label></div><div class="field"><label>Mi link para agendar</label><input type="text" data-uc="agenda" value="${esc(userCfg().agenda || '')}" placeholder="https://calendly.com/…"><div class="tip">Se usa en el mensaje de invitación (paso 3).</div></div></div>`;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  h += '<div class="card"><h2>Sesiones confirmadas</h2>' + (acc.length ? '<table><tr><th>Cliente</th><th>Fecha</th><th>Hora</th><th>Metodología</th><th>Ficha</th></tr>' + acc.map(c => {
+    const inv = sec(c, 'inv'), dt = inv.fecha ? new Date(inv.fecha + 'T00:00') : null, dias = dt ? Math.round((dt - today) / 864e5) : null, m = METODOS.find(x => x.k === metodoEff(c));
+    return `<tr class="pick" data-act="open" data-id="${esc(c.id)}"><td><b>${esc(c.meta.name)}</b></td><td>${dt ? dt.toLocaleDateString('es-CL', { weekday: 'short', day: 'numeric', month: 'short' }) + (dias != null ? ` <span class="note">(${dias < 0 ? 'hace ' + (-dias) + ' d' : dias === 0 ? 'hoy' : 'en ' + dias + ' d'})</span>` : '') : '<span class="note">sin fecha</span>'}</td><td>${esc(inv.hora || '–')}</td><td>${m ? esc(m.t) : '–'}</td><td>${sec(c, 'caso').aprobado ? '<span class="tag Alta">Aprobada</span>' : '<span class="tag Media">Por completar</span>'}</td></tr>`;
+  }).join('') + '</table>' : '<p class="note">Aún no hay invitaciones aceptadas.</p>') + '</div>';
+  h += `<div class="card"><h2>Pendientes</h2><div class="grid2"><div><h3>Esperando respuesta (${wait.length})</h3>${wait.map(c => `<div class="tip"><button class="link" data-act="open" data-id="${esc(c.id)}">${esc(c.meta.name)}</button> · enviada ${fdate(sec(c, 'inv').sentAt)}</div>`).join('') || '<span class="note">Nada pendiente.</span>'}</div><div><h3>Sin invitación (${todo.length})</h3>${todo.map(c => `<div class="tip"><button class="link" data-act="open" data-id="${esc(c.id)}">${esc(c.meta.name)}</button></div>`).join('') || '<span class="note">Todos invitados.</span>'}</div></div></div>`;
+  return h;
+}
+function renderAjustes() {
+  const g = cfg(), tl = teams();
+  let h = '<div class="crumb">Ajustes</div><div class="titlerow"><h1>Ajustes del equipo</h1></div><p class="sub">Valores que usa Ada en los mensajes y en la metodología. Se guardan para todos.</p>';
+  h += `<div class="card"><h2>Tiempos</h2><p class="note">Estos tiempos son un punto de partida: confírmalos con el equipo.</p><div class="row2"><div class="field"><label>Duración total de la sesión (min)</label><input type="number" data-cf="sesion" value="${g.sesion}"></div></div><div class="row2">${METODOS.map(m => `<div class="field"><label>${m.t} (min)</label><input type="number" data-cf="${m.k}" value="${g[m.k]}"></div>`).join('')}</div></div>`;
+  h += `<div class="card"><h2>Fórmula de Angélica</h2><div class="field"><textarea data-cf="formula" placeholder="Pega aquí la fórmula o criterio">${esc(g.formula)}</textarea></div></div>`;
+  h += `<div class="card"><h2>Biblioteca de equipos</h2>${tl.length ? '<table><tr><th>Equipo</th><th>KAM</th><th>Guía</th><th>In-house</th><th>Actuario</th><th></th></tr>' + tl.map(t => `<tr><td><b>${esc(t.name)}</b></td><td>${esc(t.kam || '')}</td><td>${esc(t.guia || '')}</td><td>${esc(t.inhouse || '')}</td><td>${esc(t.actuario || '')}</td><td><button class="link" data-act="delTeam" data-id="${esc(t.id)}">Quitar</button></td></tr>`).join('') + '</table>' : '<p class="note">Aún no hay equipos. Se guardan desde el paso 6.2.</p>'}</div>`;
+  return h;
+}
+function renderCliente() {
+  const c = C(state.cid);
+  if (!c.meta) { state.view = 'clientes'; return renderClientes(); }
+  const t = tierOf(c), done = stepsDone(c), s = sec(c, 'steps'), un = unlocked(c);
+  let h = `<button class="back" data-act="back">← Todos los clientes</button><div class="titlerow"><h1>${esc(c.meta.name)}</h1>${t ? `<span class="badge">${TIERS[t]}</span>` : ''}${c.meta.sample ? '<span class="est">ejemplo</span>' : ''}<button data-act="drawerClient" style="margin-left:auto">Ver registro</button></div>`;
+  h += `<div class="note">Responsable: ${c.meta.owner ? esc(who(c.meta.owner)) : 'sin asignar'}${c.meta.owner === state.uid ? '' : ' <button class="link" data-act="takeOwner">Soy yo</button>'}</div><div class="bar" style="max-width:360px"><i style="width:${done / 6 * 100}%"></i></div><div class="note">${done} de 6 pasos listos en ANTES</div>`;
+  h += '<div class="tabs"><button class="' + (state.tab === 'antes' ? 'on' : '') + '" data-act="tab" data-t="antes">ANTES</button><button class="dis' + (state.tab === 'durante' ? ' on' : '') + '" data-act="tab" data-t="durante">Secret sauce</button><button class="dis' + (state.tab === 'despues' ? ' on' : '') + '" data-act="tab" data-t="despues">DESPUÉS</button></div>';
+  if (state.tab !== 'antes') return h + `<div class="card soon"><h2>${state.tab === 'durante' ? 'Secret sauce' : 'DESPUÉS'} · próxima entrega</h2><p class="note">Estas pantallas están en el wireframe y se habilitan en la siguiente entrega.</p><ul>${SOON[state.tab].map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>`;
+  const eff = (state.step === 'g' || (typeof state.step === 'number' && state.step > 3 && !un)) ? 'g' : state.step;
+  const btn = (st, locked) => `<button data-act="step" data-n="${st.n}" class="${eff === st.n ? 'on' : ''}${s['s' + st.n] ? ' done' : ''}${locked ? ' locked' : ''}"><span class="dot">${locked ? '🔒' : s['s' + st.n] ? '✓' : st.n}</span><span>${st.t}<br><span class="note">${st.d}</span></span></button>`;
+  h += '<div class="flow"><div class="stepper">' + STEPS.slice(0, 3).map(st => btn(st, false)).join('') +
+    `<hr class="sep"><button data-act="step" data-n="g" class="${eff === 'g' ? 'on' : ''}${un ? ' done' : ''}"><span class="dot">${un ? '✓' : '⏳'}</span><span>Respuesta del cliente<br><span class="note">${un ? 'Aceptó la invitación' : 'Bloquea los pasos 4 a 6'}</span></span></button><hr class="sep">` + STEPS.slice(3).map(st => btn(st, !un)).join('') + '</div><div>';
+  if (eff === 'g') h += '<div class="card">' + gate(c) + '</div>';
+  else {
+    h += '<div class="card">' + [s1, s2, s3, s4, s5, s6][eff - 1](c);
+    h += `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;border-top:1px solid var(--line);padding-top:14px"><button class="${s['s' + eff] ? '' : 'pri'}" data-act="done">${s['s' + eff] ? '✓ Paso listo (deshacer)' : 'Marcar paso como listo'}</button>${eff < 6 ? '<button data-act="next">Siguiente paso →</button>' : ''}</div></div>`;
+  }
+  return h + '</div></div>';
+}
+function renderNav() {
+  const it = [['clientes', 'Clientes'], ['anadir', 'Añadir'], ['kpis', 'KPIs y metas cumplidas'], ['sesion', 'Mi sesión']], cur = state.view === 'cliente' ? 'clientes' : state.view;
+  $('nav').innerHTML = it.map(([k, l]) => `<button data-act="nav" data-v="${k}" class="${cur === k ? 'on' : ''}">${l}</button>`).join('') + `<hr><button class="sm ${cur === 'ajustes' ? 'on' : ''}" data-act="nav" data-v="ajustes">Ajustes</button>`;
+}
+function renderDrawer() {
+  const d = $('drawer'); if (!d) return;
+  if (!state.drawer) { d.classList.add('hide'); d.innerHTML = ''; return; }
+  d.classList.remove('hide'); d.setAttribute('data-act', 'drawerClose');
+  const ids = [...new Set(state.log.map(l => l.cid))], list = state.log.filter(l => state.dfilter === 'all' || l.cid === state.dfilter).slice(0, 120);
+  d.innerHTML = `<div class="panel"><div class="head" style="display:flex;justify-content:space-between;align-items:center"><h2>Registro de actividad</h2><button data-act="drawerClose">Cerrar</button></div><select data-act-change="dfilter" id="ak-dfilter"><option value="all">Todos los clientes</option>${ids.map(i => `<option value="${esc(i)}"${state.dfilter === i ? ' selected' : ''}>${esc(cname(i))}</option>`).join('')}</select>` +
+    (list.length ? list.map(l => `<div class="ent"><b>${esc(who(l.uid))}</b> ${esc(l.text)}<br><span>en <b>${esc(cname(l.cid))}</b> · ${fdate(l.at)}</span> ${C(l.cid).meta ? `<button class="lk" data-act="open" data-id="${esc(l.cid)}">Ver</button>` : ''}</div>`).join('') : '<p class="note">Aún no hay actividad.</p>') + '</div>';
+}
+function toast(l) {
+  const box = document.getElementById('ak-toasts'); if (!box) return;
+  const el = document.createElement('div'); el.className = 'toast';
+  el.innerHTML = `<b>${esc(who(l.uid))}</b> ${esc(l.text)}<br><span style="opacity:.75">en ${esc(cname(l.cid))}</span><br><button data-act="open" data-id="${esc(l.cid)}">Ver</button>`;
+  box.appendChild(el); setTimeout(() => el.remove(), 9000);
+}
+
+/* ---------- render ---------- */
+function banner() {
+  const b = $('banner'); if (!b) return;
+  const m = state.err ? ['bad', state.err] : state.mode === 'shared' ? ['ok', '● Equipo conectado: lo que anotes queda guardado para todos.'] : state.mode === 'local' ? ['local', 'Modo local: los cambios solo se guardan en este navegador y no se comparten con tu equipo.'] : ['local', 'Conectando con el equipo…'];
+  b.innerHTML = `<div class="banner ${m[0]}">${esc(m[1])}</div>`;
+}
+function drawCharts() {
+  charts.forEach(x => x.destroy()); charts = [];
+  if (state.view !== 'cliente') return;
+  const d = diagOf(C(state.cid)); if (!d) return;
+  const cv = $('cSeries'), a = $('c5a'), b = $('c5b');
+  if (cv) charts.push(new Chart(cv, { type: 'bar', data: { labels: d.series.map(x => perLabel(x.per)), datasets: [{ data: d.series.map(x => x.v), backgroundColor: d.series.map(x => x.promos ? CORAL : SALMON), borderRadius: 8, maxBarThickness: 46 }] },
+    plugins: [{ id: 'lb', afterDatasetsDraw(ch) { const x = ch.ctx; x.save(); x.font = '600 11px Poppins, system-ui'; x.fillStyle = '#1d1d1f'; x.textAlign = 'center'; ch.getDatasetMeta(0).data.forEach((bar, i) => x.fillText(money(ch.data.datasets[0].data[i], d.useNNS), bar.x, bar.y - 6)); x.restore(); } }],
+    options: { maintainAspectRatio: false, layout: { padding: { top: 18 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { y: { display: false, beginAtZero: true }, x: { grid: { display: false } } } } }));
+  if (a) charts.push(new Chart(a, { data: { labels: d.series.map(x => perLabel(x.per)), datasets: [{ type: 'bar', label: 'Ventas', data: d.series.map(x => x.v), backgroundColor: d.series.map(x => x.promos ? CORAL : SALMON), borderRadius: 6, yAxisID: 'y' }, { type: 'line', label: 'Inversión Rappi Ads', data: d.series.map(x => x.inv), borderColor: '#1d1d1f', backgroundColor: '#1d1d1f', tension: .3, pointRadius: 3, yAxisID: 'y2' }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true } }, tooltip: { callbacks: { label: (i) => i.dataset.label + ': ' + money(i.raw, i.datasetIndex === 1 ? true : d.useNNS) } } }, scales: { y: { display: false, beginAtZero: true }, y2: { display: false, beginAtZero: true, position: 'right' }, x: { grid: { display: false } } } } }));
+  if (b) { const pr = [...(d.falling || []), ...(d.rising || [])].sort((x, y) => x.t - y.t).slice(0, 10); if (pr.length) charts.push(new Chart(b, { type: 'bar', data: { labels: pr.map(x => x.d.length > 22 ? x.d.slice(0, 21) + '…' : x.d), datasets: [{ data: pr.map(x => Math.round(x.t * 100)), backgroundColor: pr.map(x => x.t < 0 ? '#d92d20' : '#1b9e5a'), borderRadius: 6 }] }, options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (i) => i.raw + '%' } } }, scales: { x: { grid: { display: false }, ticks: { callback: (v) => v + '%' } }, y: { grid: { display: false } } } } })); else b.parentNode.innerHTML = '<p class="note">Ningún producto cambia más de 10%.</p>'; }
+}
+function render() {
+  state.pending = false; banner(); renderNav();
+  const V = { clientes: renderClientes, cliente: renderCliente, anadir: renderAnadir, kpis: renderKpis, sesion: renderSesion, ajustes: renderAjustes };
+  $('view').innerHTML = (V[state.view] || renderClientes)();
+  drawCharts(); renderDrawer();
+  const bd = $('badge'); if (bd) { bd.textContent = state.unseen; bd.classList.toggle('hide', !state.unseen); }
+  const w = $('who'); if (w && state.names[state.uid]) w.textContent = 'Hola, ' + state.names[state.uid].split(' ')[0];
+}
+const typing = () => { const a = document.activeElement; return a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.closest('#ak-view'); };
+function softRender() { if (typing() || state.busy) { state.pending = true; banner(); const bd = $('badge'); if (bd) { bd.textContent = state.unseen; bd.classList.toggle('hide', !state.unseen); } } else render(); }
+
+/* ---------- acciones ---------- */
+const SEED = { 'Marca Andes': 4, 'Marca Pampa': 3, 'Marca Sur': 1.5, 'Marca Nube': 0.5, 'Marca Alba': 2 };
+const SEC_L = { dat: 'el paso 4 (análisis de data interna)', inv: 'la invitación (paso 3)', fic: 'la ficha de cliente (paso 5)', caso: 'la ficha del caso (paso 6)', meta: 'los datos del cliente', kpi: 'los KPIs' };
+const lastLog = {};
+function logEdit(cid, s) { const k = cid + s, now = Date.now(); if (now - (lastLog[k] || 0) < 120000) return; lastLog[k] = now; store.addLog(cid, 'actualizó ' + (SEC_L[s] || 'la ficha')); }
+function openClient(id) {
+  state.cid = id; state.view = 'cliente'; state.tab = 'antes'; state.drawer = false;
+  const c = C(id), s = sec(c, 'steps'), n = [1, 2, 3, 4, 5, 6].find(x => !s['s' + x]) || 1;
+  state.step = (n > 3 && !unlocked(c)) ? 'g' : n; render(); window.scrollTo({ top: 0 });
+}
+function saveBrand(b) {
+  const id = slug(b.name), ex = C(id), meta = ex.meta ? ex.meta : { name: b.name, tier: 0, since: state.sampleData && SEED[b.name] != null ? SEED[b.name] : '', sample: !!state.sampleData, createdAt: Date.now(), owner: state.uid };
+  store.saveClient(id, { meta, diag: snapshotFor(b), steps: ex.steps || {} });
+  store.addLog(id, 'guardó el diagnóstico de ventas y campañas');
+}
+function saveLearnings() { const g = state.res.global; store.saveSetting('learnings', { at: Date.now(), by: state.uid, useNNS: state.res.useNNS, band: g.band.map(x => ({ key: x.key, n: x.n, up: x.up })), tipo: g.tipo.map(x => ({ key: x.key, n: x.n, up: x.up })), dur: g.dur.map(x => ({ key: x.key, n: x.n, up: x.up })) }); }
+function setSec(c, s, patch) { const obj = Object.assign({}, c[s], patch); store.saveClient(c.id, { [s]: obj }); }
+async function ada(prompt, out, btn, done) {
+  let smp = null; try { smp = await claude.use('sample'); } catch (e) { }
+  if (!smp) { out.innerHTML = '<div class="warn">La redacción con IA no está disponible en esta vista.</div>'; return; }
+  if (btn) btn.disabled = true; state.busy = true; out.innerHTML = '<div class="ada">Ada está redactando…</div>';
+  try { const r = await smp(prompt, { onText: ({ text }) => { out.innerHTML = '<div class="ada">' + esc(text) + '</div>'; } }); out.innerHTML = '<div class="ada">' + esc(r.text) + '</div>'; if (done) done(r.text); }
+  catch (e) { out.innerHTML = '<div class="warn">No se pudo generar el texto (' + esc(e.code || e.message || 'error') + ').</div>'; }
+  state.busy = false; if (btn) btn.disabled = false;
+}
+async function adaTo(prompt, ta, btn, done) { /* escribe directo en el cuadro de texto, sin caja aparte */
+  let smp = null; try { smp = await claude.use('sample'); } catch (e) { }
+  if (!smp) { alert_('La redacción con IA no está disponible en esta vista.'); return; }
+  btn.disabled = true; const o = btn.textContent; btn.textContent = 'Ada está redactando…'; state.busy = true; ta.value = '';
+  try { const r = await smp(prompt, { onText: ({ text }) => { ta.value = text; } }); ta.value = r.text; done(r.text); }
+  catch (e) { btn.textContent = 'No se pudo redactar'; setTimeout(() => { btn.textContent = o; }, 2000); }
+  state.busy = false; btn.disabled = false; if (btn.textContent === 'Ada está redactando…') btn.textContent = o;
+}
+function alert_(m) { const b = $('banner'); if (b) b.insertAdjacentHTML('beforeend', `<div class="banner bad">${esc(m)}</div>`); }
+async function copy(text, btn) { const o = btn.textContent; try { await navigator.clipboard.writeText(text); btn.textContent = '✓ Copiado'; } catch (e) { btn.textContent = 'No se pudo copiar'; } setTimeout(() => { btn.textContent = o; }, 1800); }
+async function saveFile(name, blob) {
+  try { const dl = await claude.use('downloads'); if (dl) { await dl.save({ filename: name, data: blob }); return; } } catch (e) { if (e && /declin|cancel|denied/i.test(String(e.code || e.message))) return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function applyTeam(c, t) { setSec(c, 'caso', { eq_kam: t.kam || '', eq_guia: t.guia || '', eq_inhouse: t.inhouse || '', eq_externos: t.externos || '', eq_actuario: t.actuario || '' }); store.addLog(c.id, 'aplicó el equipo «' + t.name + '» (paso 6.2)'); }
+
+document.addEventListener('click', (e) => {
+  if (e.target.tagName === 'INPUT' && e.target.type === 'radio') return;
+  const t = e.target.closest('[data-act]'); if (!t || t.tagName === 'SELECT') return;
+  const a = t.dataset.act, c = C(state.cid);
+  const go = () => { render(); };
+  switch (a) {
+    case 'nav': state.view = t.dataset.v; state.drawer = false; render(); return window.scrollTo({ top: 0 });
+    case 'open': return openClient(t.dataset.id);
+    case 'back': state.view = 'clientes'; return render();
+    case 'tab': state.tab = t.dataset.t; return render();
+    case 'step': state.step = t.dataset.n === 'g' ? 'g' : +t.dataset.n; render(); return window.scrollTo({ top: 0 });
+    case 'next': state.step = Math.min(6, (+state.step || 3) + 1); render(); return window.scrollTo({ top: 0 });
+    case 'done': { const s = Object.assign({}, c.steps), k = 's' + state.step; s[k] = !s[k]; store.saveClient(c.id, { steps: s }); store.addLog(c.id, (s[k] ? 'marcó como listo' : 'reabrió') + ' el paso ' + state.step + ' «' + STEPS[state.step - 1].t + '»'); return go(); }
+    case 'tpl': return saveFile('Ada-plantilla-estandar.xlsx', stdTemplate());
+    case 'tplCopy': return copy(STD.promo.map(x => x[0]).join('\t') + '\n' + STD.ventas.map(x => x[0]).join('\t'), t);
+    case 'sampleGo': return useSample();
+    case 'run': return run();
+    case 'saveAll': state.res.brands.forEach(saveBrand); saveLearnings(); state.view = 'clientes'; return render();
+    case 'saveDiag': { const lb = liveBrand(c.meta.name); if (lb) { saveBrand(lb); saveLearnings(); } return go(); }
+    case 'rmSamples': Object.values(state.clients).filter(x => x.meta && x.meta.sample).forEach(x => store.removeClient(x.id)); return go();
+    case 'newClient': { const el = $('nn'), name = (el.value || '').trim(); if (!name) { el.focus(); return; } const id = slug(name); if (!state.clients[id]) { store.saveClient(id, { meta: { name, tier: 0, since: '', createdAt: Date.now(), owner: state.uid }, steps: {} }); store.addLog(id, 'creó el cliente'); } state.newName = ''; return openClient(id); }
+    case 'takeOwner': setSec(c, 'meta', { owner: state.uid }); store.addLog(c.id, 'quedó como responsable del cliente'); return go();
+    case 'saveWeights': { const w = {}; document.querySelectorAll('[data-w]').forEach(i => { w[i.dataset.w] = Math.max(0, Math.min(100, +i.value || 0)); }); store.saveSetting('benchmark', { weights: w }); store.addLog(c.id, 'cambió la escala del benchmark (paso 2)'); return go(); }
+    case 'dec': {
+      const k = t.dataset.k, dd = Object.assign({}, sec(c, 'dec')), d = diagOf(c), ac = d && (d.actions || []).find(x => decKey(x) === k);
+      dd[k] = Object.assign({}, dd[k], { est: t.dataset.v, by: state.uid, at: Date.now() }); store.saveClient(c.id, { dec: dd });
+      store.addLog(c.id, 'decidió (paso 1) «' + (DEC_L[t.dataset.v] || '').toLowerCase() + '»' + (ac ? ': ' + ac.title : '')); return go();
+    }
+    case 'genMsg': setSec(c, 'inv', { mensaje: inviteMsg(c), canal: 'Correo' }); return go();
+    case 'adaMsg': { const d = diagOf(c), inv = sec(c, 'inv'), link = userCfg().agenda || ''; const ta = document.querySelector('[data-f="inv.mensaje"]'); const p = `Redacta en español un correo breve, cordial y profesional (máximo 120 palabras, con línea "Asunto:") del KAM de Rappi Ads ${state.names[state.uid] || ''} para invitar al cliente ${c.meta.name}${inv.contacto ? ' (contacto: ' + inv.contacto + ')' : ''} al Rappi Club, una sesión de trabajo de ${cfg().sesion} minutos para diseñar juntos su próxima campaña${inv.fecha ? ', propuesta para el ' + inv.fecha + (inv.hora ? ' a las ' + inv.hora : '') : ''}. Cierra con la frase exacta "Agenda el horario que mejor te acomode aquí: ${link || '[link para agendar]'}". Oportunidad de crecimiento estimada: ${d ? d.opp.level : 'sin dato'}. No menciones cifras de ventas ni datos del cliente. No inventes datos. Entrega solo el correo.`; return adaTo(p, ta, t, (txt) => { setSec(c, 'inv', { mensaje: txt, canal: 'Correo' }); }); }
+    case 'copyMsg': return copy(sec(c, 'inv').mensaje || inviteMsg(c), t);
+    case 'sent': { const inv = sec(c, 'inv'); setSec(c, 'inv', { canal: 'Correo', estado: (inv.estado === 'aceptada' || inv.estado === 'rechazada') ? inv.estado : 'enviada', sentAt: Date.now(), sentBy: state.uid }); store.addLog(c.id, 'marcó la invitación como enviada por correo'); return go(); }
+    case 'accept': setSec(c, 'inv', { estado: 'aceptada', acceptedAt: Date.now() }); store.addLog(c.id, 'registró que el cliente aceptó la invitación: se desbloquearon los pasos 4 a 6'); state.step = 4; return go();
+    case 'reject': setSec(c, 'inv', { estado: 'rechazada' }); store.addLog(c.id, 'registró que el cliente rechazó la invitación'); return go();
+    case 'reopenInv': setSec(c, 'inv', { estado: 'enviada' }); store.addLog(c.id, 'volvió la invitación a «Enviada»'); state.step = 'g'; return go();
+    case 'addLink': { const u = $('lu').value.trim(), n = $('ln').value.trim(); if (!u && !n) return; setSec(c, 'dat', { links: (sec(c, 'dat').links || []).concat([{ tipo: $('lt').value, url: u, nota: n }]) }); logEdit(c.id, 'dat'); return go(); }
+    case 'delLink': { const l = (sec(c, 'dat').links || []).slice(); l.splice(+t.dataset.i, 1); setSec(c, 'dat', { links: l }); return go(); }
+    case 'addCamp': { const dsc = $('cd').value.trim(); if (!dsc) { $('cd').focus(); return; } const x = { desc: dsc, tipo: $('ct').value.trim(), pct: $('cp').value === '' ? null : +$('cp').value, dur: $('cdu').value === '' ? null : +$('cdu').value, mes: $('cm').value.trim() }; setSec(c, 'fic', { camps: (sec(c, 'fic').camps || []).concat([x]) }); store.addLog(c.id, 'agregó la campaña «' + dsc + '» (paso 5.2)'); return go(); }
+    case 'delCamp': { const l = (sec(c, 'fic').camps || []).slice(); l.splice(+t.dataset.i, 1); setSec(c, 'fic', { camps: l }); return go(); }
+    case 'useObj': setSec(c, 'fic', { objetivoAcordado: objetivoSugerido(c, diagOf(c)) }); return go();
+    case 'objFromCamps': { const fic = sec(c, 'fic'), dat = sec(c, 'dat'), cp = fic.camps || []; const txt = `Para ${c.meta.name}: ${dat.objTipo ? dat.objTipo.toLowerCase() + (dat.meta ? ' (meta ' + dat.meta + (dat.plazo ? ' en ' + dat.plazo + ' meses' : '') + ')' : '') + ' mediante ' : ''}${cp.length} campaña${cp.length > 1 ? 's' : ''}: ${cp.map(x => x.desc + (x.pct != null ? ' con ' + x.pct + '% de descuento' : '') + (x.dur ? ' por ' + x.dur + ' días' : '') + (x.mes ? ' en ' + x.mes : '')).join('; ')}.`; setSec(c, 'fic', { objetivoAcordado: txt }); return go(); }
+    case 'pickM': setSec(c, 'fic', { metodologia: t.dataset.k, metManual: true }); store.addLog(c.id, 'eligió la metodología «' + METODOS.find(m => m.k === t.dataset.k).t + '» (paso 5.4)'); return go();
+    case 'resetM': setSec(c, 'fic', { metManual: false }); return go();
+    case 'saveTeam': { const nm = $('teamname').value.trim(); if (!nm) { $('teamname').focus(); return; } const caso = sec(c, 'caso'), cur = teams().filter(x => x.name !== nm); store.saveSetting('teams', { list: cur.concat([{ id: slug(nm), name: nm, kam: caso.eq_kam || '', guia: caso.eq_guia || '', inhouse: caso.eq_inhouse || '', externos: caso.eq_externos || '', actuario: caso.eq_actuario || '' }]) }); return go(); }
+    case 'delTeam': store.saveSetting('teams', { list: teams().filter(x => x.id !== t.dataset.id) }); return go();
+    case 'approve': { const s = Object.assign({}, c.steps, { s6: true }); store.saveClient(c.id, { caso: Object.assign({}, c.caso, { metodologia: metodoEff(c), objetivo: sec(c, 'fic').objetivoAcordado, aprobado: { by: state.uid, at: Date.now() } }), steps: s }); store.addLog(c.id, 'aprobó la ficha del caso'); return go(); }
+    case 'unapprove': setSec(c, 'caso', { aprobado: null }); store.addLog(c.id, 'quitó la aprobación de la ficha del caso'); return go();
+    case 'adaResumen': { const d = diagOf(c); return ada('Reescribe en español simple y cercano, en máximo 90 palabras y sin listas, este resumen de un cliente para un KAM. No cambies ni inventes cifras:\n\n' + summaryText(c, d), $('ada'), t); }
+    case 'setBase': { const cc = C(t.dataset.id), d = diagOf(cc); if (!d) return; setSec(cc, 'dat', { base: { l3: d.l3, at: Date.now() } }); store.addLog(cc.id, 'fijó la base de ventas para su meta (KPIs)'); return go(); }
+    case 'mine': state.onlyMine = t.checked; return go();
+    case 'drawer': state.drawer = !state.drawer; state.unseen = 0; state.dfilter = 'all'; return render();
+    case 'drawerClient': state.drawer = true; state.unseen = 0; state.dfilter = state.cid; return render();
+    case 'drawerClose': if (e.target === t || t.tagName === 'BUTTON') { state.drawer = false; render(); } return;
+  }
+});
+document.addEventListener('change', (e) => {
+  const el = e.target;
+  if (el.id === 'ak-files') { if (el.files.length) readFiles([...el.files]); return; }
+  if (el.dataset.kind) { state.map[el.dataset.kind][el.dataset.k] = el.value || undefined; return render(); }
+  if (el.id === 'ak-nn') { state.newName = el.value; return; }
+  if (el.id === 'ak-dfilter') { state.dfilter = el.value; return renderDrawer(); }
+  if (el.id === 'ak-teamsel') { const tm = teams().find(x => x.id === el.value); if (tm) { applyTeam(C(state.cid), tm); render(); } return; }
+  if (el.dataset.uc) { store.saveSetting('user_' + state.uid, Object.assign({}, userCfg(), { [el.dataset.uc]: el.value.trim() })); return; }
+  if (el.dataset.cf) { const k = el.dataset.cf, v = el.type === 'number' ? Math.max(1, +el.value || DEF_CFG[k]) : el.value; store.saveSetting('config', Object.assign({}, state.sd.config, { [k]: v })); if (state.cid) store.addLog(state.cid, 'cambió un ajuste del equipo: ' + (k === 'formula' ? 'fórmula de Angélica' : 'tiempo de ' + (k === 'sesion' ? 'la sesión' : METODOS.find(m => m.k === k).t))); return; }
+  if (el.dataset.dk) { const c = C(state.cid), dd = Object.assign({}, sec(c, 'dec')); dd[el.dataset.dk] = Object.assign({}, dd[el.dataset.dk], { nota: el.value, by: state.uid, at: Date.now() }); store.saveClient(c.id, { dec: dd }); logEdit(c.id, 'dec'); const w = el.nextElementSibling; if (w && w.classList.contains('warn') && el.value) w.remove(); return; }
+  const f = el.dataset.f; if (!f) return;
+  const [s, k] = f.split('.'), cid = el.dataset.cid || state.cid, c = C(cid);
+  let v = el.type === 'checkbox' ? el.checked : el.type === 'number' ? (el.value === '' ? null : +el.value) : el.value;
+  if (s === 'meta' && k === 'tier') v = +el.value;
+  setSec(c, s, { [k]: v });
+  if (s === 'meta' && k === 'tier') { store.addLog(c.id, 'definió el tipo de cliente: ' + (v ? TIERS_L[v] : 'automático')); return render(); }
+  if (s === 'dat' && k === 'alineacion') store.addLog(c.id, 'definió la alineación con Rappi Ads: ' + (v || 'sin definir') + ' (paso 2)');
+  else logEdit(c.id, s);
+  if (s === 'inv' && k === 'estado') return render();
+  if (s === 'caso') { const ap = $('appr'); if (ap) ap.innerHTML = approvalHtml(C(state.cid)); }
+  if (s === 'dat' && (k === 'meta' || k === 'plazo')) { const vd = $('verdict'); if (vd) vd.innerHTML = verdict(C(state.cid), diagOf(C(state.cid))); return; }
+  if (el.tagName === 'SELECT' || el.type === 'checkbox' || s === 'kpi') return render();
+  if (s === 'meta' && k === 'since') state.pending = true;
+});
+document.addEventListener('focusout', () => { if (state.pending) setTimeout(() => { if (state.pending && !typing()) render(); }, 0); });
+document.addEventListener('dragover', (e) => { const z = e.target.closest && e.target.closest('#ak-drop'); if (z) { e.preventDefault(); z.classList.add('on'); } });
+document.addEventListener('dragleave', (e) => { const z = e.target.closest && e.target.closest('#ak-drop'); if (z) z.classList.remove('on'); });
+document.addEventListener('drop', (e) => { const z = e.target.closest && e.target.closest('#ak-drop'); if (z) { e.preventDefault(); z.classList.remove('on'); if (e.dataTransfer.files.length) readFiles([...e.dataTransfer.files]); } });
+
+render();
+store.init();
+})();
+</script>
+<script>
+/* Integración con RappiAds Planner: muestra el correo del KAM y, si va dentro del Planner, el botón de cerrar sesión */
+(function(){
+  var w=document.getElementById('ak-who'); if(!w)return;
+  try{var em=new URLSearchParams(location.search).get('kam'); if(em)w.textContent=em;}catch(e){}
+  if(window.parent!==window){
+    var b=document.createElement('button'); b.className='bellbtn'; b.id='ak-logout'; b.textContent='Cerrar sesión';
+    b.onclick=function(){parent.postMessage({type:'rappi-logout'},'*');};
+    w.parentNode.appendChild(b);
+  }
+})();
+</script>
+</body></html>
