@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ada · RappiAds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+<style>
+:root{--fg:#1E1E24;--muted:#6C6C78;--line:#E3E3E8;--coral:#FF441F;--pink:#FF2050;--grad:linear-gradient(135deg,#FF441F,#FF2050)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:Poppins,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--fg)}
+.hide{display:none!important}
+/* La app de makers va a pantalla completa, sin tocarla */
+#maker,#kam{position:fixed;inset:0;width:100%;height:100%;border:0;background:#fff}
+#kam{z-index:300;background:#f5f5f5}
+/* Botón de 3 líneas y globo */
+#mb{position:fixed;top:18px;right:20px;z-index:100;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--fg);display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 8px rgba(30,30,36,.08)}
+#mb:hover{background:#f6f6f8}
+#scrim{position:fixed;inset:0;z-index:110}
+#pop{position:fixed;top:74px;right:20px;z-index:120;width:270px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 32px rgba(30,30,36,.16);padding:8px;display:flex;flex-direction:column}
+#pop button{display:flex;flex-direction:column;gap:2px;text-align:left;background:none;border:0;border-radius:12px;padding:12px 14px;font:inherit;cursor:pointer}
+#pop button:hover{background:#f6f6f8}
+#pop b{font-weight:600}#pop span{font-size:12px;color:var(--muted)}
+/* Pantallas de sponsor, ayuda y soporte */
+.ov{position:fixed;inset:0;z-index:200;display:flex;background:#fff}
+.ov .l{flex:1;background:var(--grad);color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:center}
+.ov .l h2{font-size:44px;margin:0 0 18px;font-weight:700}
+.ov .l p{font-size:18px;line-height:1.55;max-width:420px;margin:0;font-weight:500}
+.ov .r{flex:1;display:flex;align-items:center;justify-content:center;padding:32px;overflow:auto}
+.ov .box{width:100%;max-width:460px}
+.ov h1{font-size:30px;margin:0 0 6px;font-weight:600}
+.ov .sub{color:var(--muted);font-size:14px;margin:0 0 20px}
+.ov label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px}
+.ov input{width:100%;font:inherit;font-size:14px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.ov input:focus{outline:2px solid #ffb9a8}
+.btn{display:block;width:100%;margin-top:20px;font:inherit;font-weight:600;font-size:15px;padding:14px;border-radius:12px;border:0;background:var(--coral);color:#fff;cursor:pointer}
+.btn:hover{background:#e83a16}
+.back{background:none;border:0;padding:0;margin:0 0 18px;font:inherit;font-size:13px;font-weight:600;color:var(--coral);cursor:pointer}
+.small{font-size:12px;color:var(--muted);margin:14px 0 0}
+.faq{border-top:1px solid var(--line)}
+.faq button{display:flex;justify-content:space-between;gap:12px;width:100%;text-align:left;background:none;border:0;padding:14px 0;font:inherit;font-weight:500;cursor:pointer}
+.faq em{font-style:normal;color:var(--coral);font-weight:700}
+.faq p{margin:0 0 14px;color:var(--muted);font-size:14px;line-height:1.5}
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:400;background:#1E1E24;color:#fff;border-radius:14px;padding:12px 18px;font-size:14px}
+@media(max-width:860px){.ov{flex-direction:column}.ov .l{flex:none;padding:28px 24px}.ov .l h2{font-size:30px}.ov .r{align-items:flex-start;padding:24px}}
+</style>
+</head>
+<body>
+<iframe id="maker" title="Ada para makers" src="ADA%20Maker%20-%20Prototipo%20(v5.4)%20%E2%80%93%20ADA%20para%20makers%20(computador).html"></iframe>
+<button id="mb" aria-label="Menú de acceso" aria-haspopup="true" aria-expanded="false"><svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path d="M1 1h18M1 7h18M1 13h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+<div id="scrim" class="hide"></div>
+<div id="pop" class="hide" role="menu">
+  <button role="menuitem" data-go="sponsor"><b>Inicia como sponsor</b><span>KAM de Rappi</span></button>
+  <button role="menuitem" data-go="ayuda"><b>Ayuda</b><span>Preguntas frecuentes</span></button>
+  <button role="menuitem" data-go="soporte"><b>Soporte</b><span>Habla con una persona</span></button>
+</div>
+
+<section id="ov-sponsor" class="ov hide"><div class="l"><h2>Ada para KAM</h2><p>Diagnóstico de clientes, benchmark e invitaciones al Rappi Club, todo en un lugar.</p></div>
+  <div class="r"><div class="box"><button class="back" data-go="">← Volver al inicio de sesión</button>
+  <h1>Ingresa como sponsor</h1><p class="sub">Acceso para KAM de Rappi, con tu correo @rappi.com</p>
+  <label for="k-mail">Correo Rappi</label><input id="k-mail" type="email" placeholder="tu.nombre@rappi.com" autocomplete="off">
+  <label for="k-pass">Contraseña</label><input id="k-pass" type="password" placeholder="Tu contraseña">
+  <button class="btn" id="k-go">Ingresar como sponsor</button>
+  <p class="small">Prototipo: cualquier contraseña sirve. El acceso depende del correo @rappi.com.</p></div></div></section>
+
+<section id="ov-ayuda" class="ov hide"><div class="l"><h2>Ayuda</h2><p>Respuestas rápidas sobre RappiAds y sobre Ada.</p></div>
+  <div class="r"><div class="box"><button class="back" data-go="">← Volver al inicio de sesión</button><h1>Preguntas frecuentes</h1><p class="sub">Toca una pregunta para ver la respuesta.</p><div id="faqs"></div></div></div></section>
+
+<section id="ov-soporte" class="ov hide"><div class="l"><h2>Soporte</h2><p>¿No puedes entrar o algo no funciona? Una persona del equipo de Rappi Ads te responde en horario hábil.</p></div>
+  <div class="r"><div class="box"><button class="back" data-go="">← Volver al inicio de sesión</button><h1>Escríbenos</h1><p class="sub">Cuéntanos qué pasa y te contestamos por correo.</p>
+  <label for="s-mail">Tu correo</label><input id="s-mail" type="email" placeholder="tu@marca.com">
+  <label for="s-msg">¿En qué podemos ayudarte?</label><input id="s-msg" type="text" placeholder="Cuéntanos qué pasa">
+  <button class="btn" id="s-go">Enviar a soporte</button><p class="small">Prototipo: el envío es simulado.</p></div></div></section>
+
+<iframe id="kam" class="hide" title="Ada para KAM"></iframe>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i);};
+  var KAM=/^[^\s@]+@rappi\.com$/i;
+  var FAQ=[['¿Qué hace Ada y qué decido yo?','Ada propone el reparto del presupuesto, los formatos y las sugerencias, y te explica el porqué de cada una. Tú apruebas antes de que algo se lance o cambie.'],
+   ['¿Cómo se calcula el ROAS?','ROAS neto = ventas atribuidas netas ÷ inversión. Las ventas netas descuentan promociones y la comisión de Rappi. El ACOS es su inverso: inversión ÷ ventas.'],
+   ['¿Puedo repartir el presupuesto yo mismo?','Sí. Eliges el reparto manual y defines cuánto va a cada campaña. Ada te avisa qué alcanza a lograr y puedes pedirle una sugerencia cuando quieras.'],
+   ['¿Cuándo llega el reporte del mes?','Los primeros días de cada mes. También puedes elegir reporte diario, semanal o al cerrar la campaña.']];
+  var open=-1;
+  function faqs(){$('faqs').innerHTML=FAQ.map(function(f,i){return '<div class="faq"><button data-q="'+i+'" aria-expanded="'+(open===i)+'">'+f[0]+'<em>'+(open===i?'−':'+')+'</em></button>'+(open===i?'<p>'+f[1]+'</p>':'')+'</div>';}).join('');}
+  function toast(m){var t=$('toast');if(!t){t=document.createElement('div');t.id='toast';t.setAttribute('role','status');document.body.appendChild(t);}t.textContent=m;t.classList.remove('hide');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.add('hide');},2600);}
+  function menu(on){$('pop').classList.toggle('hide',!on);$('scrim').classList.toggle('hide',!on);$('mb').setAttribute('aria-expanded',on);}
+  function show(n){menu(false);['sponsor','ayuda','soporte'].forEach(function(k){$('ov-'+k).classList.toggle('hide',k!==n);});if(n==='ayuda'){open=-1;faqs();}$('mb').classList.toggle('hide',!!n||!loginVisible());}
+  function enterKam(email){var f=$('kam');f.src='ada-para-kam.html?kam='+encodeURIComponent(email.trim().toLowerCase());f.classList.remove('hide');$('mb').classList.add('hide');['sponsor','ayuda','soporte'].forEach(function(k){$('ov-'+k).classList.add('hide');});}
+  function leaveKam(){var f=$('kam');f.classList.add('hide');f.removeAttribute('src');$('k-pass').value='';$('maker').contentWindow.location.reload();show('');}
+  /* El botón de 3 líneas solo se ve en las pantallas de acceso de la app de makers (si no se puede leer, se deja visible) */
+  function loginVisible(){try{var d=$('maker').contentDocument;return !!(d&&(d.getElementById('lg-pass')||d.getElementById('lg-mail')||!d.body||d.body.innerText.indexOf('Ingresa a Ada')>-1||d.body.innerText.indexOf('Soy nuevo')>-1||d.body.innerText.indexOf('Crea tu')>-1));}catch(e){return true;}}
+  var hooked=null;
+  function tick(){
+    var kamOpen=!$('kam').classList.contains('hide'),ovOpen=['sponsor','ayuda','soporte'].some(function(k){return !$('ov-'+k).classList.contains('hide');});
+    if(!kamOpen&&!ovOpen)$('mb').classList.toggle('hide',!loginVisible());
+    /* un correo @rappi.com escrito en el login de makers entra como KAM */
+    try{var d=$('maker').contentDocument;if(d&&d!==hooked&&d.body){hooked=d;d.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button');var m=d.getElementById('lg-mail');if(b&&m&&d.getElementById('lg-pass')&&/^ingresar$/i.test(b.textContent.trim())&&KAM.test(m.value.trim())){e.stopPropagation();e.preventDefault();enterKam(m.value);}},true);}}catch(e){}
+  }
+  setInterval(tick,300);tick();
+  $('mb').onclick=function(){menu($('pop').classList.contains('hide'));};
+  $('scrim').onclick=function(){menu(false);};
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')menu(false);});
+  document.addEventListener('click',function(e){var g=e.target.closest('[data-go]');if(g)show(g.dataset.go);var q=e.target.closest('[data-q]');if(q){open=open===+q.dataset.q?-1:+q.dataset.q;faqs();}});
+  $('k-go').onclick=function(){var m=$('k-mail').value.trim();if(!KAM.test(m)){toast('Para entrar como sponsor usa tu correo @rappi.com');return;}if(!$('k-pass').value){toast('Escribe tu contraseña');return;}enterKam(m);};
+  $('s-go').onclick=function(){if($('s-mail').value.indexOf('@')<1){toast('Escribe un correo válido');return;}if(!$('s-msg').value.trim()){toast('Cuéntanos en qué podemos ayudarte');return;}$('s-mail').value='';$('s-msg').value='';toast('Mensaje enviado a soporte (simulado)');};
+  window.addEventListener('message',function(e){var f=$('kam');if(e.source===f.contentWindow&&e.data&&e.data.type==='rappi-logout')leaveKam();});
+})();
+</script>
+</body>
+</html>
