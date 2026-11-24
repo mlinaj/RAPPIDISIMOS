@@ -84,21 +84,14 @@ html,body{margin:0;height:100%;font-family:Poppins,system-ui,-apple-system,"Sego
   var FAQ=[
    ['Entrar a Ada',[['¿Cómo entro si soy KAM de Rappi?','Abre el menú de tres líneas y elige «Inicia como sponsor». Usa tu correo @rappi.com.'],
      ['¿Cómo entro si mi marca es del RappiClub?','Con tu correo y contraseña en «Ingresa a Ada». Si eres nuevo, elige «Soy nuevo en Ada».'],
-     ['¿No puedo entrar o algo falla?','Escríbenos desde Soporte y una persona del equipo de Rappi Ads te responde en horario hábil.']]],
+     ['¿Olvidé mi contraseña o algo falla?','Escríbenos desde Soporte y una persona del equipo de Rappi Ads te ayuda en horario hábil.']]],
    ['Ada y tu KAM',[['¿Qué es Ada?','Es tu espacio para crear y seguir tu campaña con Rappi, junto a tu KAM.'],
-     ['¿Quién ve mis respuestas?','Tu KAM, para preparar la sesión.']]],
-   ['Tu sesión del RappiClub',[['¿Cuánto dura la sesión?','Aproximadamente 2 horas.'],
-     ['¿Puedo cambiar la fecha después?','Sí, avísale a tu KAM con al menos 24 horas de anticipación.'],
-     ['¿Qué debo preparar?','Responde las preguntas y ten a mano tus productos estrella y tus mejores días de venta.']]],
-   ['Presupuesto y orden de compra',[['¿Por qué cambia la estimación si muevo el presupuesto?','Porque los resultados esperados dependen del monto y de cómo lo repartes.'],
-     ['¿Puedo cambiar el reparto?','Sí, mientras no hayas confirmado la orden de compra.'],
-     ['¿Cuánto demora la revisión de la orden?','Habitualmente menos de un día hábil.']]],
-   ['Materiales y piezas',[['¿Qué es una foto con hero?','Es la foto protagonista de tu producto, con buena luz y fondo limpio.'],
-     ['¿Qué formatos acepto?','JPG o PNG para fotos y PNG o SVG para el logo.'],
-     ['¿Puedo pedir cambios en las piezas?','Sí. Tu KAM los recibe y te avisa cuando estén listos.']]],
-   ['Tu campaña en vivo',[['¿Qué ve mi KAM?','El mismo tablero que ves tú.'],
-     ['¿Qué pasa si aplico una sugerencia de Ada?','Tu campaña se ajusta y tu KAM lo ve en su plataforma. Puedes deshacerla.'],
-     ['¿Qué pasa si cierro la campaña?','Tu KAM recibe el resumen y podemos preparar la siguiente.']]]];
+     ['¿Qué hace mi KAM en Ada?','Te acompaña en cada paso: prepara la sesión contigo, revisa tu presupuesto y tus piezas, y ve el mismo tablero que ves tú.'],
+     ['¿Quién ve mis respuestas?','Tu KAM, para preparar la sesión.'],
+     ['¿Ada cambia mi campaña sin avisarme?','No. Tú eliges cómo se aplican sus sugerencias, y con la opción de aprobar primero Ada nunca cambia nada sin que tú lo apruebes.']]],
+   ['Antes de empezar',[['¿Qué puedo hacer en Ada?','Agendar tu sesión del RappiClub con tu KAM, definir tu presupuesto, subir tus materiales y mirar tus resultados, todo en un lugar.'],
+     ['¿Cuánto dura la sesión del RappiClub?','Aproximadamente 2 horas.'],
+     ['¿Qué debo preparar?','Ten a mano tus productos estrella y tus mejores días de venta.']]]];
   var open=-1;
   function faqs(){var n=-1;$('faqs').innerHTML=FAQ.map(function(g){return '<h3 class="gt">'+g[0]+'</h3>'+g[1].map(function(f){n++;var i=n;return '<div class="faq"><button data-q="'+i+'" aria-expanded="'+(open===i)+'">'+f[0]+'<em>'+(open===i?'−':'+')+'</em></button>'+(open===i?'<p>'+f[1]+'</p>':'')+'</div>';}).join('');}).join('');}
   function toast(m){var t=$('toast');if(!t){t=document.createElement('div');t.id='toast';t.setAttribute('role','status');document.body.appendChild(t);}t.textContent=m;t.classList.remove('hide');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.add('hide');},2600);}
