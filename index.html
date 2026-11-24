@@ -27,8 +27,8 @@ html,body{margin:0;height:100%;font-family:Poppins,system-ui,-apple-system,"Sego
 .ov .l{flex:1;background:var(--grad);color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:center}
 .ov .l h2{font-size:44px;margin:0 0 18px;font-weight:700}
 .ov .l p{font-size:18px;line-height:1.55;max-width:420px;margin:0;font-weight:500}
-.ov .r{flex:1;display:flex;align-items:center;justify-content:center;padding:32px;overflow:auto}
-.ov .box{width:100%;max-width:460px}
+.ov .r{flex:1;display:flex;padding:32px;overflow:auto}
+.ov .box{width:100%;max-width:460px;margin:auto}
 .ov h1{font-size:30px;margin:0 0 6px;font-weight:600}
 .ov .sub{color:var(--muted);font-size:14px;margin:0 0 20px}
 .ov label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px}
@@ -38,12 +38,14 @@ html,body{margin:0;height:100%;font-family:Poppins,system-ui,-apple-system,"Sego
 .btn:hover{background:#e83a16}
 .back{background:none;border:0;padding:0;margin:0 0 18px;font:inherit;font-size:13px;font-weight:600;color:var(--coral);cursor:pointer}
 .small{font-size:12px;color:var(--muted);margin:14px 0 0}
+.gt{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--coral);margin:22px 0 4px;font-weight:600}
+.more{margin-top:26px;padding:18px 20px;background:#FFF3EE;border:1px solid #FBE0D6;border-radius:14px;font-size:14px}
 .faq{border-top:1px solid var(--line)}
 .faq button{display:flex;justify-content:space-between;gap:12px;width:100%;text-align:left;background:none;border:0;padding:14px 0;font:inherit;font-weight:500;cursor:pointer}
 .faq em{font-style:normal;color:var(--coral);font-weight:700}
 .faq p{margin:0 0 14px;color:var(--muted);font-size:14px;line-height:1.5}
 #toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:400;background:#1E1E24;color:#fff;border-radius:14px;padding:12px 18px;font-size:14px}
-@media(max-width:860px){.ov{flex-direction:column}.ov .l{flex:none;padding:28px 24px}.ov .l h2{font-size:30px}.ov .r{align-items:flex-start;padding:24px}}
+@media(max-width:860px){.ov{flex-direction:column}.ov .l{flex:none;padding:28px 24px}.ov .l h2{font-size:30px}.ov .r{padding:24px}}
 </style>
 </head>
 <body>
@@ -64,8 +66,9 @@ html,body{margin:0;height:100%;font-family:Poppins,system-ui,-apple-system,"Sego
   <button class="btn" id="k-go">Ingresar como sponsor</button>
   <p class="small">Prototipo: cualquier contraseña sirve. El acceso depende del correo @rappi.com.</p></div></div></section>
 
-<section id="ov-ayuda" class="ov hide"><div class="l"><h2>Ayuda</h2><p>Respuestas rápidas sobre RappiAds y sobre Ada.</p></div>
-  <div class="r"><div class="box"><button class="back" data-go="">← Volver al inicio de sesión</button><h1>Preguntas frecuentes</h1><p class="sub">Toca una pregunta para ver la respuesta.</p><div id="faqs"></div></div></div></section>
+<section id="ov-ayuda" class="ov hide"><div class="l"><h2>Ayuda</h2><p>Preguntas frecuentes sobre el RappiClub y Ada. Para algo puntual, escribe a Soporte.</p></div>
+  <div class="r"><div class="box"><button class="back" data-go="">← Volver al inicio de sesión</button><h1>Preguntas frecuentes</h1><p class="sub">Toca una pregunta para ver la respuesta.</p><div id="faqs"></div>
+  <div class="more"><b>¿No encuentras tu duda?</b><button class="btn" data-go="soporte" style="margin-top:12px">Escribir a Soporte</button></div></div></div></section>
 
 <section id="ov-soporte" class="ov hide"><div class="l"><h2>Soporte</h2><p>¿No puedes entrar o algo no funciona? Una persona del equipo de Rappi Ads te responde en horario hábil.</p></div>
   <div class="r"><div class="box"><button class="back" data-go="">← Volver al inicio de sesión</button><h1>Escríbenos</h1><p class="sub">Cuéntanos qué pasa y te contestamos por correo.</p>
@@ -78,12 +81,26 @@ html,body{margin:0;height:100%;font-family:Poppins,system-ui,-apple-system,"Sego
 (function(){
   var $=function(i){return document.getElementById(i);};
   var KAM=/^[^\s@]+@rappi\.com$/i;
-  var FAQ=[['¿Qué hace Ada y qué decido yo?','Ada propone el reparto del presupuesto, los formatos y las sugerencias, y te explica el porqué de cada una. Tú apruebas antes de que algo se lance o cambie.'],
-   ['¿Cómo se calcula el ROAS?','ROAS neto = ventas atribuidas netas ÷ inversión. Las ventas netas descuentan promociones y la comisión de Rappi. El ACOS es su inverso: inversión ÷ ventas.'],
-   ['¿Puedo repartir el presupuesto yo mismo?','Sí. Eliges el reparto manual y defines cuánto va a cada campaña. Ada te avisa qué alcanza a lograr y puedes pedirle una sugerencia cuando quieras.'],
-   ['¿Cuándo llega el reporte del mes?','Los primeros días de cada mes. También puedes elegir reporte diario, semanal o al cerrar la campaña.']];
+  var FAQ=[
+   ['Entrar a Ada',[['¿Cómo entro si soy KAM de Rappi?','Abre el menú de tres líneas y elige «Inicia como sponsor». Usa tu correo @rappi.com.'],
+     ['¿Cómo entro si mi marca es del RappiClub?','Con tu correo y contraseña en «Ingresa a Ada». Si eres nuevo, elige «Soy nuevo en Ada».'],
+     ['¿No puedo entrar o algo falla?','Escríbenos desde Soporte y una persona del equipo de Rappi Ads te responde en horario hábil.']]],
+   ['Ada y tu KAM',[['¿Qué es Ada?','Es tu espacio para crear y seguir tu campaña con Rappi, junto a tu KAM.'],
+     ['¿Quién ve mis respuestas?','Tu KAM, para preparar la sesión.']]],
+   ['Tu sesión del RappiClub',[['¿Cuánto dura la sesión?','Aproximadamente 2 horas.'],
+     ['¿Puedo cambiar la fecha después?','Sí, avísale a tu KAM con al menos 24 horas de anticipación.'],
+     ['¿Qué debo preparar?','Responde las preguntas y ten a mano tus productos estrella y tus mejores días de venta.']]],
+   ['Presupuesto y orden de compra',[['¿Por qué cambia la estimación si muevo el presupuesto?','Porque los resultados esperados dependen del monto y de cómo lo repartes.'],
+     ['¿Puedo cambiar el reparto?','Sí, mientras no hayas confirmado la orden de compra.'],
+     ['¿Cuánto demora la revisión de la orden?','Habitualmente menos de un día hábil.']]],
+   ['Materiales y piezas',[['¿Qué es una foto con hero?','Es la foto protagonista de tu producto, con buena luz y fondo limpio.'],
+     ['¿Qué formatos acepto?','JPG o PNG para fotos y PNG o SVG para el logo.'],
+     ['¿Puedo pedir cambios en las piezas?','Sí. Tu KAM los recibe y te avisa cuando estén listos.']]],
+   ['Tu campaña en vivo',[['¿Qué ve mi KAM?','El mismo tablero que ves tú.'],
+     ['¿Qué pasa si aplico una sugerencia de Ada?','Tu campaña se ajusta y tu KAM lo ve en su plataforma. Puedes deshacerla.'],
+     ['¿Qué pasa si cierro la campaña?','Tu KAM recibe el resumen y podemos preparar la siguiente.']]]];
   var open=-1;
-  function faqs(){$('faqs').innerHTML=FAQ.map(function(f,i){return '<div class="faq"><button data-q="'+i+'" aria-expanded="'+(open===i)+'">'+f[0]+'<em>'+(open===i?'−':'+')+'</em></button>'+(open===i?'<p>'+f[1]+'</p>':'')+'</div>';}).join('');}
+  function faqs(){var n=-1;$('faqs').innerHTML=FAQ.map(function(g){return '<h3 class="gt">'+g[0]+'</h3>'+g[1].map(function(f){n++;var i=n;return '<div class="faq"><button data-q="'+i+'" aria-expanded="'+(open===i)+'">'+f[0]+'<em>'+(open===i?'−':'+')+'</em></button>'+(open===i?'<p>'+f[1]+'</p>':'')+'</div>';}).join('');}).join('');}
   function toast(m){var t=$('toast');if(!t){t=document.createElement('div');t.id='toast';t.setAttribute('role','status');document.body.appendChild(t);}t.textContent=m;t.classList.remove('hide');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.add('hide');},2600);}
   function menu(on){$('pop').classList.toggle('hide',!on);$('scrim').classList.toggle('hide',!on);$('mb').setAttribute('aria-expanded',on);}
   function show(n){menu(false);['sponsor','ayuda','soporte'].forEach(function(k){$('ov-'+k).classList.toggle('hide',k!==n);});if(n==='ayuda'){open=-1;faqs();}$('mb').classList.toggle('hide',!!n||!loginVisible());}
